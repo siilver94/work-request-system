@@ -65,3 +65,5 @@ Power Apps 기반 연구소 작업의뢰 시스템
 3. 작업 시작
 4. 작업 완료
 5. 기록 보관
+
+- 전체 화면 코드: `powerapps/WorkRequest_Screen_fullcode.yaml`
