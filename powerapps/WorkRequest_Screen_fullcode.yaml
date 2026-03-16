@@ -124,6 +124,9 @@ Screens:
         Refresh(das);
         Refresh(WorkRequestComments_DB);
         Refresh(UserInfo_DB);
+        // 프로젝트 마스터도 새로고침
+        Refresh(Project_DB);
+        Set(varSelectedImageAttachment, Blank());
     Children:
       - Container1:
           Control: GroupContainer@1.5.0
@@ -314,7 +317,7 @@ Screens:
                                               SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                               Stage = "Completed",
                                               IsBlank(varSearchText) ||
-                                              StartsWith(Title, varSearchText) ||
+                                              StartsWith(제목, varSearchText) ||
                                               StartsWith(RequesterName, varSearchText) ||
                                               StartsWith(RequestNo, varSearchText)
                                           ),
@@ -330,7 +333,7 @@ Screens:
                                               CloseResult <> "RejectedByApprover",
                                               CloseResult <> "RejectedByWorker",
                                               IsBlank(varSearchText) ||
-                                              StartsWith(Title, varSearchText) ||
+                                              StartsWith(제목, varSearchText) ||
                                               StartsWith(RequesterName, varSearchText) ||
                                               StartsWith(RequestNo, varSearchText)
                                           ),
@@ -348,7 +351,7 @@ Screens:
                                               Stage = "Completed",
                                               RequesterEmail = varMyEmail,
                                               IsBlank(varSearchText) ||
-                                              StartsWith(Title, varSearchText) ||
+                                              StartsWith(제목, varSearchText) ||
                                               StartsWith(RequesterName, varSearchText) ||
                                               StartsWith(RequestNo, varSearchText)
                                           ),
@@ -365,7 +368,7 @@ Screens:
                                               CloseResult <> "RejectedByApprover",
                                               CloseResult <> "RejectedByWorker",
                                               IsBlank(varSearchText) ||
-                                              StartsWith(Title, varSearchText) ||
+                                              StartsWith(제목, varSearchText) ||
                                               StartsWith(RequesterName, varSearchText) ||
                                               StartsWith(RequestNo, varSearchText)
                                           ),
@@ -433,6 +436,34 @@ Screens:
                               OnSelect: |-
                                 =Set(varSelectedRequest, ThisItem);
                                 Set(varRequestMode, "View");
+                                Set(
+                                    varSelectedImageAttachment,
+                                    If(
+                                        CountRows(
+                                            Filter(
+                                                ThisItem.'첨부 파일',
+                                                EndsWith(Lower(DisplayName), ".jpg") ||
+                                                EndsWith(Lower(DisplayName), ".jpeg") ||
+                                                EndsWith(Lower(DisplayName), ".png") ||
+                                                EndsWith(Lower(DisplayName), ".gif") ||
+                                                EndsWith(Lower(DisplayName), ".bmp") ||
+                                                EndsWith(Lower(DisplayName), ".webp")
+                                            )
+                                        ) > 0,
+                                        First(
+                                            Filter(
+                                                ThisItem.'첨부 파일',
+                                                EndsWith(Lower(DisplayName), ".jpg") ||
+                                                EndsWith(Lower(DisplayName), ".jpeg") ||
+                                                EndsWith(Lower(DisplayName), ".png") ||
+                                                EndsWith(Lower(DisplayName), ".gif") ||
+                                                EndsWith(Lower(DisplayName), ".bmp") ||
+                                                EndsWith(Lower(DisplayName), ".webp")
+                                            )
+                                        ),
+                                        Blank()
+                                    )
+                                );
                                 Set(varShowRequestPopup, true);
                               PressedFill: =RGBA(0,0,0,0)
                               TabIndex: =0
@@ -587,7 +618,7 @@ Screens:
                                       SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                       Stage = "InProgress",
                                       IsBlank(varSearchText) ||
-                                      StartsWith(Title, varSearchText) ||
+                                      StartsWith(제목, varSearchText) ||
                                       StartsWith(RequesterName, varSearchText) ||
                                       StartsWith(RequestNo, varSearchText)
                                   ),
@@ -602,7 +633,7 @@ Screens:
                                       Stage = "InProgress",
                                       RequesterEmail = varMyEmail,
                                       IsBlank(varSearchText) ||
-                                      StartsWith(Title, varSearchText) ||
+                                      StartsWith(제목, varSearchText) ||
                                       StartsWith(RequesterName, varSearchText) ||
                                       StartsWith(RequestNo, varSearchText)
                                   ),
@@ -668,6 +699,34 @@ Screens:
                               OnSelect: |-
                                 =Set(varSelectedRequest, ThisItem);
                                 Set(varRequestMode, "View");
+                                Set(
+                                    varSelectedImageAttachment,
+                                    If(
+                                        CountRows(
+                                            Filter(
+                                                ThisItem.'첨부 파일',
+                                                EndsWith(Lower(DisplayName), ".jpg") ||
+                                                EndsWith(Lower(DisplayName), ".jpeg") ||
+                                                EndsWith(Lower(DisplayName), ".png") ||
+                                                EndsWith(Lower(DisplayName), ".gif") ||
+                                                EndsWith(Lower(DisplayName), ".bmp") ||
+                                                EndsWith(Lower(DisplayName), ".webp")
+                                            )
+                                        ) > 0,
+                                        First(
+                                            Filter(
+                                                ThisItem.'첨부 파일',
+                                                EndsWith(Lower(DisplayName), ".jpg") ||
+                                                EndsWith(Lower(DisplayName), ".jpeg") ||
+                                                EndsWith(Lower(DisplayName), ".png") ||
+                                                EndsWith(Lower(DisplayName), ".gif") ||
+                                                EndsWith(Lower(DisplayName), ".bmp") ||
+                                                EndsWith(Lower(DisplayName), ".webp")
+                                            )
+                                        ),
+                                        Blank()
+                                    )
+                                );
                                 Set(varShowRequestPopup, true);
                               PressedFill: =RGBA(0,0,0,0)
                               TabIndex: =0
@@ -731,7 +790,7 @@ Screens:
                                       SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                       Stage = "Start",
                                       IsBlank(varSearchText) ||
-                                      StartsWith(Title, varSearchText) ||
+                                      StartsWith(제목, varSearchText) ||
                                       StartsWith(RequesterName, varSearchText) ||
                                       StartsWith(RequestNo, varSearchText)
                                   ),
@@ -751,7 +810,7 @@ Screens:
                                               (RequesterTeamSnapshot = varMyTeam && ApprovalState = "Pending")
                                           ),
                                           IsBlank(varSearchText) ||
-                                          StartsWith(Title, varSearchText) ||
+                                          StartsWith(제목, varSearchText) ||
                                           StartsWith(RequesterName, varSearchText) ||
                                           StartsWith(RequestNo, varSearchText)
                                       ),
@@ -766,7 +825,7 @@ Screens:
                                           Stage = "Start",
                                           RequesterEmail = varMyEmail,
                                           IsBlank(varSearchText) ||
-                                          StartsWith(Title, varSearchText) ||
+                                          StartsWith(제목, varSearchText) ||
                                           StartsWith(RequesterName, varSearchText) ||
                                           StartsWith(RequestNo, varSearchText)
                                       ),
@@ -832,6 +891,34 @@ Screens:
                               OnSelect: |-
                                 =Set(varSelectedRequest, ThisItem);
                                 Set(varRequestMode, "View");
+                                Set(
+                                    varSelectedImageAttachment,
+                                    If(
+                                        CountRows(
+                                            Filter(
+                                                ThisItem.'첨부 파일',
+                                                EndsWith(Lower(DisplayName), ".jpg") ||
+                                                EndsWith(Lower(DisplayName), ".jpeg") ||
+                                                EndsWith(Lower(DisplayName), ".png") ||
+                                                EndsWith(Lower(DisplayName), ".gif") ||
+                                                EndsWith(Lower(DisplayName), ".bmp") ||
+                                                EndsWith(Lower(DisplayName), ".webp")
+                                            )
+                                        ) > 0,
+                                        First(
+                                            Filter(
+                                                ThisItem.'첨부 파일',
+                                                EndsWith(Lower(DisplayName), ".jpg") ||
+                                                EndsWith(Lower(DisplayName), ".jpeg") ||
+                                                EndsWith(Lower(DisplayName), ".png") ||
+                                                EndsWith(Lower(DisplayName), ".gif") ||
+                                                EndsWith(Lower(DisplayName), ".bmp") ||
+                                                EndsWith(Lower(DisplayName), ".webp")
+                                            )
+                                        ),
+                                        Blank()
+                                    )
+                                );
                                 Set(varShowRequestPopup, true);
                               PressedFill: =RGBA(0,0,0,0)
                               TabIndex: =0
@@ -923,6 +1010,7 @@ Screens:
               =Set(varShowRequestPopup, false);
               Set(varRequestMode, "View");
               Set(varSelectedRequest, Defaults(das));
+              Set(varSelectedImageAttachment, Blank());
             PressedFill: =RGBA(0, 0, 0, 0)
             Visible: =varShowRequestPopup
             Width: =1369
@@ -978,7 +1066,7 @@ Screens:
                       Control: ModernText@1.0.0
                       Properties:
                         Height: =56
-                        Text: =varSelectedRequest.Title
+                        Text: =varSelectedRequest.제목
                         Width: =170
                         X: =39
                         Y: =92
@@ -986,13 +1074,13 @@ Screens:
                       Control: ModernText@1.0.0
                       Properties:
                         FontWeight: =FontWeight.Lighter
-                        Text: ="의뢰내용"
+                        Text: ="품번(내용)"
                         X: =269
                         Y: =60
                   - Text1_3:
                       Control: ModernText@1.0.0
                       Properties:
-                        Text: =varSelectedRequest.RequestDetail
+                        Text: =Coalesce(varSelectedRequest.RequestDetail, "-")
                         Width: =184
                         X: =269
                         Y: =104
@@ -1084,6 +1172,88 @@ Screens:
                           )
                         X: =478
                         Y: =236
+                  - Text1_21:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        Height: =56
+                        Text: |-
+                          =If(
+                              IsBlank(varSelectedRequest.DesiredDueDate),
+                              "-",
+                              Text(varSelectedRequest.DesiredDueDate, "yyyy.mm.dd")
+                          )
+                        Width: =170
+                        X: =649
+                        Y: =520
+                  - galImagePreviewList:
+                      Control: Gallery@2.15.0
+                      Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_pcfCore
+                      Properties:
+                        BorderColor: =RGBA(243, 242, 241, 1)
+                        FocusedBorderColor: =RGBA(98, 100, 167, 1)
+                        FocusedBorderThickness: =2
+                        Height: =289
+                        Items: |-
+                          =Filter(
+                              varSelectedRequest.'첨부 파일',
+                              EndsWith(Lower(DisplayName), ".jpg") ||
+                              EndsWith(Lower(DisplayName), ".jpeg") ||
+                              EndsWith(Lower(DisplayName), ".png") ||
+                              EndsWith(Lower(DisplayName), ".gif") ||
+                              EndsWith(Lower(DisplayName), ".bmp") ||
+                              EndsWith(Lower(DisplayName), ".webp")
+                          )
+                        Width: =266
+                        X: =746
+                        Y: =199
+                      Children:
+                        - Image1:
+                            Control: Image@2.2.3
+                            Properties:
+                              BorderColor: =RGBA(0, 0, 0, 0)
+                              BorderStyle: =BorderStyle.None
+                              BorderThickness: =2
+                              DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                              DisabledFill: =RGBA(0, 0, 0, 0)
+                              Height: =28
+                              HoverBorderColor: =RGBA(0, 0, 0, 0)
+                              HoverFill: =RGBA(0, 0, 0, 0)
+                              Image: =Coalesce(ThisItem.AbsoluteUri, ThisItem.Value)
+                              OnSelect: =Select(Parent)
+                              PressedBorderColor: =RGBA(0, 0, 0, 0)
+                              PressedFill: =RGBA(0, 0, 0, 0)
+                              RadiusBottomLeft: =3
+                              RadiusBottomRight: =3
+                              RadiusTopLeft: =3
+                              RadiusTopRight: =3
+                              Width: =28
+                              X: =12
+                              Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+                        - Title2:
+                            Control: FluentV8/Label@1.8.6
+                            Properties:
+                              FontWeight: =FontWeight.Semibold
+                              Height: =24
+                              OnSelect: =Select(Parent)
+                              TabIndex: =-1
+                              Text: =ThisItem.DisplayName
+                              VerticalAlignment: =VerticalAlign.Top
+                              Width: =Parent.TemplateWidth - Self.X - 8
+                              X: =Image1.X + Image1.Width + 12
+                              Y: =((Parent.TemplateHeight - 36) / 2) - 4
+                        - Rectangle4:
+                            Control: Rectangle@2.3.0
+                            Properties:
+                              BorderColor: =RGBA(243, 242, 241, 1)
+                              DisabledFill: =RGBA(0,0,0,0)
+                              Fill: =RGBA(0,0,0,0)
+                              FocusedBorderColor: =RGBA(98, 100, 167, 1)
+                              Height: =Parent.TemplateHeight
+                              HoverFill: =RGBA(0,0,0,0)
+                              OnSelect: =Set(varSelectedImageAttachment, ThisItem)
+                              PressedFill: =RGBA(0,0,0,0)
+                              TabIndex: =0
+                              Width: =Parent.TemplateWidth
                   - frmRequestAttachmentView:
                       Control: FormViewer@2.3.4
                       Layout: Vertical
@@ -1103,7 +1273,7 @@ Screens:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DataField: ="{Attachments}"
                               Default: =ThisItem.'첨부 파일'
-                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'{Attachments}')
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'첨부 파일')
                               Height: =168
                               Required: =false
                               Update: =DataCardValue3.Attachments
@@ -1213,43 +1383,103 @@ Screens:
                                     Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =30
                                     Wrap: =false
-            - Icon1:
-                Control: Classic/Icon@2.5.0
-                Properties:
-                  BorderColor: =RGBA(0, 0, 0, 0)
-                  Color: =RGBA(106, 122, 127, 1)
-                  DisabledBorderColor: =RGBA(243, 242, 241, 1)
-                  DisabledColor: =RGBA(220, 220, 220, 1)
-                  DisabledFill: =RGBA(0, 0, 0, 0)
-                  FocusedBorderThickness: =1
-                  Height: =32
-                  HoverBorderColor: =RGBA(0, 0, 0, 0)
-                  HoverColor: =ColorFade(RGBA(98, 100, 167, 1), -30%)
-                  HoverFill: =RGBA(0, 0, 0, 0)
-                  Icon: =Icon.Cancel
-                  OnSelect: |-
-                    =Set(varShowRequestPopup, false);
-                    Set(varRequestMode, "View");
-                    Set(varSelectedRequest, Defaults(das));
-                  PaddingBottom: =3
-                  PaddingLeft: =3
-                  PaddingRight: =3
-                  PaddingTop: =3
-                  PressedBorderColor: =RGBA(0, 0, 0, 0)
-                  PressedColor: =ColorFade(RGBA(98, 100, 167, 1), -30%)
-                  PressedFill: =RGBA(0, 0, 0, 0)
-                  Width: =32
-                  X: =974
-                  Y: =11
+                  - Text1_14:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        FontWeight: =FontWeight.Lighter
+                        Text: |-
+                          ="프로젝트명
+                          "
+                        X: =49
+                        Y: =488
+                  - Text1_15:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        Height: =56
+                        Text: =Coalesce(varSelectedRequest.ProjectName, "-")
+                        Width: =170
+                        X: =39
+                        Y: =520
+                  - Text1_16:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        FontWeight: =FontWeight.Lighter
+                        Text: ="관련기종명"
+                        X: =255
+                        Y: =488
+                  - Text1_17:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        Height: =56
+                        Text: =Coalesce(varSelectedRequest.RelatedModel, "-")
+                        Width: =170
+                        X: =257
+                        Y: =520
+                  - Text1_18:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        FontWeight: =FontWeight.Lighter
+                        Text: ="수량"
+                        X: =427
+                        Y: =488
+                  - Text1_19:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        Height: =56
+                        Text: |-
+                          =If(
+                              IsBlank(varSelectedRequest.RequestQty),
+                              "-",
+                              Text(varSelectedRequest.RequestQty, "[$-ko-KR]#,##0")
+                          )
+                        Width: =170
+                        X: =427
+                        Y: =520
+                  - Text1_20:
+                      Control: ModernText@1.0.0
+                      Properties:
+                        FontWeight: =FontWeight.Lighter
+                        Text: ="희망완료일"
+                        X: =659
+                        Y: =488
+                  - imgAttachmentPreview:
+                      Control: Image@2.2.3
+                      Properties:
+                        BorderColor: =RGBA(0, 0, 0, 0)
+                        BorderStyle: =BorderStyle.None
+                        BorderThickness: =2
+                        DisabledBorderColor: =RGBA(0, 0, 0, 0)
+                        DisabledFill: =RGBA(0, 0, 0, 0)
+                        Height: =149
+                        HoverBorderColor: =RGBA(0, 0, 0, 0)
+                        HoverFill: =RGBA(0, 0, 0, 0)
+                        Image: |-
+                          =If(
+                              IsBlank(varSelectedImageAttachment),
+                              Blank(),
+                              Coalesce(varSelectedImageAttachment.AbsoluteUri, varSelectedImageAttachment.Value)
+                          )
+                        ImagePosition: =ImagePosition.Fill
+                        OnSelect: =
+                        PressedBorderColor: =RGBA(0, 0, 0, 0)
+                        PressedFill: =RGBA(0, 0, 0, 0)
+                        RadiusBottomLeft: =3
+                        RadiusBottomRight: =3
+                        RadiusTopLeft: =3
+                        RadiusTopRight: =3
+                        Visible: =!IsBlank(varSelectedImageAttachment)
+                        Width: =291
+                        X: =391
+                        Y: =238
             - confrmRequest:
                 Control: GroupContainer@1.5.0
                 Variant: ManualLayout
                 Properties:
                   Fill: =RGBA(174, 208, 221, 0.1)
-                  Height: =598
+                  Height: =661
                   Visible: =varShowRequestPopup && (varRequestMode = "New" || varRequestMode = "Edit")
                   Width: =1019
-                  Y: =44
+                  Y: =4
                 Children:
                   - TextCanvas3_4:
                       Control: Text@0.0.51
@@ -1275,7 +1505,7 @@ Screens:
                       Properties:
                         BorderColor: =RGBA(243, 242, 241, 1)
                         DataSource: =das
-                        Height: =390
+                        Height: =545
                         Item: =varSelectedRequest
                         OnSuccess: |-
                           =// =============================
@@ -1341,7 +1571,7 @@ Screens:
                                   {
                                       Title: "Comment",
                                       RequestID: Self.LastSubmit.ID,
-                                      RequestTitle: Self.LastSubmit.Title,
+                                      RequestTitle: Self.LastSubmit.제목,
                                       RequestNo: varNewRequestNo,
                                       CommentText: varMyName & "님이 작업의뢰를 등록했습니다.",
                                       CommentType: "Submit",
@@ -1368,8 +1598,9 @@ Screens:
 
                           Set(varToastMessage, "작업의뢰가 등록되었습니다.");
                           Set(varShowToast, true);
-                        X: =85
-                        Y: =92
+                        Width: =922
+                        X: =38
+                        Y: =42
                       Children:
                         - 제목_DataCard1:
                             Control: TypedDataCard@1.0.7
@@ -1378,11 +1609,11 @@ Screens:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DataField: ="Title"
                               Default: =ThisItem.제목
-                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'Title')
-                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, 'Title')
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,제목)
+                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, 제목)
                               Required: =false
                               Update: =DataCardValue1.Value
-                              Width: =266
+                              Width: =307
                               X: =0
                               Y: =0
                             Children:
@@ -1391,7 +1622,7 @@ Screens:
                                   MetadataKey: FieldName
                                   Properties:
                                     Height: =22
-                                    Text: =Parent.DisplayName
+                                    Text: =Parent.DisplayName&"(작업내용)"
                                     Weight: ='TextCanvas.Weight'.Semibold
                                     Width: =Parent.Width - 48
                                     Wrap: =false
@@ -1430,6 +1661,98 @@ Screens:
                                     Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =30
                                     Y: =DataCardKey1.Y
+                        - ProjectName_DataCard1:
+                            Control: TypedDataCard@1.0.7
+                            Variant: TextualEdit
+                            Properties:
+                              BorderColor: =RGBA(243, 242, 241, 1)
+                              DataField: ="ProjectName"
+                              Default: =ThisItem.ProjectName
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,ProjectName)
+                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, ProjectName)
+                              Required: =true
+                              Update: |-
+                                =If(
+                                    IsEmpty(cmbProjectName.SelectedItems),
+                                    Blank(),
+                                    First(cmbProjectName.SelectedItems).프로젝트명
+                                )
+                              Width: =307
+                              X: =1
+                              Y: =0
+                            Children:
+                              - DataCardKey7:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    Height: =22
+                                    Text: =Parent.DisplayName&"(프로젝트명)"
+                                    Weight: ='TextCanvas.Weight'.Semibold
+                                    Width: =Parent.Width - 48
+                                    Wrap: =false
+                                    X: =24
+                                    Y: =10
+                              - ErrorMessage7:
+                                  Control: Text@0.0.51
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    Height: =30
+                                    Text: =Parent.Error
+                                    Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =
+                              - StarVisible7:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldRequired
+                                  Properties:
+                                    Align: ='TextCanvas.Align'.Center
+                                    Height: =30
+                                    Text: ="*"
+                                    Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =30
+                                    Y: =DataCardKey7.Y
+                              - cmbProjectName:
+                                  Control: ModernCombobox@1.0.0
+                                  Properties:
+                                    DefaultSelectedItems: =[]
+                                    InputTextPlaceholder: ="프로젝트명을 검색하거나 선택하세요"
+                                    ItemDisplayText: =ThisItem.프로젝트명
+                                    Items: |-
+                                      =With(
+                                          {
+                                              _base: Filter(
+                                                  Project_DB,
+                                                  (업무_계정 = "제품개발" || 업무_계정 = "기술개발") &&
+                                                  프로젝트명 <> "추가분"
+                                              )
+                                          },
+                                          SortByColumns(
+                                              AddColumns(
+                                                  Filter(
+                                                      _base,
+                                                      프로젝트명 <> "기타" ||
+                                                      ID = First(
+                                                          SortByColumns(
+                                                              Filter(_base, 프로젝트명 = "기타"),
+                                                              "ID",
+                                                              SortOrder.Ascending
+                                                          )
+                                                      ).ID
+                                                  ),
+                                                  SortOrderEtc,
+                                                  If(프로젝트명 = "기타", 1, 0)
+                                              ),
+                                              "SortOrderEtc",
+                                              SortOrder.Ascending,
+                                              "OData__xd504__xb85c__xc81d__xd2b8__xba",
+                                              SortOrder.Ascending
+                                          )
+                                      )
+                                    SelectMultiple: =false
+                                    Width: =243
+                                    X: =36
+                                    Y: =30
                         - RequestDetail_DataCard1:
                             Control: TypedDataCard@1.0.7
                             Variant: TextualEdit
@@ -1437,13 +1760,13 @@ Screens:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DataField: ="RequestDetail"
                               Default: =ThisItem.RequestDetail
-                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'RequestDetail')
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,RequestDetail)
                               Height: =78
-                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, 'RequestDetail')
+                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, RequestDetail)
                               Required: =true
-                              Update: =DataCardValue2.Value
-                              Width: =266
-                              X: =1
+                              Update: =Trim(txtPartDescription.Value)
+                              Width: =307
+                              X: =2
                               Y: =0
                             Children:
                               - DataCardKey2:
@@ -1451,19 +1774,20 @@ Screens:
                                   MetadataKey: FieldName
                                   Properties:
                                     Height: =22
-                                    Text: =Parent.DisplayName
+                                    Text: =Parent.DisplayName&"(품번(내용))"
                                     Weight: ='TextCanvas.Weight'.Semibold
                                     Width: =Parent.Width - 48
                                     Wrap: =false
                                     X: =24
                                     Y: =10
-                              - DataCardValue2:
+                              - txtPartDescription:
                                   Control: TextInput@0.0.54
                                   MetadataKey: FieldValue
                                   Properties:
                                     AccessibleLabel: =Parent.DisplayName
                                     DisplayMode: =Parent.DisplayMode
                                     Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                                    Placeholder: ="품번(내용) 입력"
                                     Required: =Parent.Required
                                     ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
                                     Value: =Parent.Default
@@ -1479,7 +1803,7 @@ Screens:
                                     Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =Parent.Width - 48
                                     X: =24
-                                    Y: =DataCardValue2.Y + DataCardValue2.Height
+                                    Y: =txtPartDescription.Y + txtPartDescription.Height
                               - StarVisible2:
                                   Control: Text@0.0.51
                                   MetadataKey: FieldRequired
@@ -1490,46 +1814,32 @@ Screens:
                                     Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =30
                                     Y: =DataCardKey2.Y
-                        - AttachmentLink_DataCard1:
+                        - RequestQty_DataCard1:
                             Control: TypedDataCard@1.0.7
-                            Variant: UrlEdit
-                            IsLocked: true
+                            Variant: NumberEdit
                             Properties:
                               BorderColor: =RGBA(243, 242, 241, 1)
-                              DataField: ="AttachmentLink"
-                              Default: =ThisItem.AttachmentLink
-                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'AttachmentLink')
+                              DataField: ="RequestQty"
+                              Default: =ThisItem.RequestQty
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,RequestQty)
                               Required: =false
-                              Update: =DataCardValue9.Value
-                              Width: =266
-                              X: =2
-                              Y: =0
+                              Update: =Trim(txtRequestQty.Value)
+                              Width: =307
+                              X: =0
+                              Y: =1
                             Children:
-                              - DataCardKey9:
+                              - DataCardKey5:
                                   Control: Text@0.0.51
                                   MetadataKey: FieldName
                                   Properties:
                                     Height: =22
-                                    Text: =Parent.DisplayName
+                                    Text: =Parent.DisplayName&"(수량)"
                                     Weight: ='TextCanvas.Weight'.Semibold
                                     Width: =Parent.Width - 48
                                     Wrap: =false
                                     X: =24
                                     Y: =10
-                              - DataCardValue9:
-                                  Control: TextInput@0.0.54
-                                  MetadataKey: FieldValue
-                                  Properties:
-                                    AccessibleLabel: =Parent.DisplayName
-                                    DisplayMode: =Parent.DisplayMode
-                                    Mode: ='TextInputCanvas.Mode'.SingleLine
-                                    Required: =Parent.Required
-                                    ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
-                                    Value: =Parent.Default
-                                    Width: =Parent.Width - 48
-                                    X: =24
-                                    Y: =DataCardKey9.Y + DataCardKey9.Height + 4
-                              - ErrorMessage9:
+                              - ErrorMessage5:
                                   Control: Text@0.0.51
                                   MetadataKey: ErrorMessage
                                   Properties:
@@ -1538,17 +1848,30 @@ Screens:
                                     Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =Parent.Width - 48
                                     X: =24
-                                    Y: =DataCardValue9.Y + DataCardValue9.Height
-                              - StarVisible9:
+                                    Y: =
+                              - StarVisible5:
                                   Control: Text@0.0.51
                                   MetadataKey: FieldRequired
                                   Properties:
                                     Align: ='TextCanvas.Align'.Center
-                                    Height: =20
+                                    Height: =30
                                     Text: ="*"
                                     Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =30
-                                    Y: =DataCardKey9.Y
+                                    Y: =DataCardKey5.Y
+                              - txtRequestQty:
+                                  Control: TextInput@0.0.54
+                                  Properties:
+                                    AccessibleLabel: =Parent.DisplayName
+                                    DisplayMode: =Parent.DisplayMode
+                                    Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                                    Placeholder: ="수량 입력"
+                                    Required: =Parent.Required
+                                    ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                                    Value: =Parent.Default
+                                    Width: =Parent.Width - 48
+                                    X: =30
+                                    Y: =40
                         - 첨부 파일_DataCard1:
                             Control: TypedDataCard@1.0.7
                             Variant: ClassicAttachmentsEdit
@@ -1556,11 +1879,11 @@ Screens:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DataField: ="{Attachments}"
                               Default: =ThisItem.'첨부 파일'
-                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'{Attachments}')
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'첨부 파일')
                               Required: =false
                               Update: =DataCardValue12.Attachments
-                              Width: =266
-                              X: =0
+                              Width: =307
+                              X: =1
                               Y: =1
                             Children:
                               - DataCardKey12:
@@ -1668,18 +1991,192 @@ Screens:
                                     Width: =30
                                     Wrap: =false
                                     Y: =DataCardKey12.Y
+                        - DesiredDueDate_DataCard3:
+                            Control: TypedDataCard@1.0.7
+                            Variant: DateTimeEdit
+                            Properties:
+                              BorderColor: =RGBA(243, 242, 241, 1)
+                              DataField: ="DesiredDueDate"
+                              Default: =ThisItem.DesiredDueDate
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'DesiredDueDate')
+                              Height: =150
+                              Required: =true
+                              Update: =dpDesiredDueDate.SelectedDate
+                              Width: =307
+                              X: =2
+                              Y: =1
+                            Children:
+                              - DataCardKey13:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    Height: =26
+                                    Text: =Parent.DisplayName&"(희망완료일)"
+                                    Weight: ='TextCanvas.Weight'.Semibold
+                                    Width: =241
+                                    Wrap: =false
+                                    X: =52
+                                    Y: =10
+                              - dpDesiredDueDate:
+                                  Control: ModernDatePicker@1.0.0
+                                  Properties:
+                                    DefaultDate: |-
+                                      =If(
+                                          varRequestMode = "New",
+                                          Today(),
+                                          Parent.Default
+                                      )
+                                    Width: =235
+                                    X: =24
+                                    Y: =51
+                        - ProjectIDRef_DataCard2:
+                            Control: TypedDataCard@1.0.7
+                            Variant: NumberEdit
+                            Properties:
+                              BorderColor: =RGBA(243, 242, 241, 1)
+                              DataField: ="ProjectIDRef"
+                              Default: =ThisItem.ProjectIDRef
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'ProjectIDRef')
+                              Required: =false
+                              Update: |-
+                                =If(
+                                    IsEmpty(cmbProjectName.SelectedItems),
+                                    Blank(),
+                                    Value(First(cmbProjectName.SelectedItems).ID)
+                                )
+                              Visible: =false
+                              Width: =307
+                              X: =0
+                              Y: =2
+                            Children:
+                              - DataCardKey15:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    Height: =22
+                                    Text: =Parent.DisplayName
+                                    Weight: ='TextCanvas.Weight'.Semibold
+                                    Width: =Parent.Width - 48
+                                    Wrap: =false
+                                    X: =24
+                                    Y: =10
+                              - DataCardValue11:
+                                  Control: NumberInput@2.9.12
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    AccessibleLabel: =Parent.DisplayName
+                                    DisplayMode: =Parent.DisplayMode
+                                    Max: =Blank()
+                                    Min: =Blank()
+                                    ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                                    Value: =Parent.Default
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =DataCardKey15.Y + DataCardKey15.Height + 4
+                              - ErrorMessage15:
+                                  Control: Text@0.0.51
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    Height: =30
+                                    Text: =Parent.Error
+                                    Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =DataCardValue11.Y + DataCardValue11.Height
+                              - StarVisible15:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldRequired
+                                  Properties:
+                                    Align: ='TextCanvas.Align'.Center
+                                    Height: =30
+                                    Text: ="*"
+                                    Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =30
+                                    Y: =DataCardKey15.Y
+                        - RelatedModel_DataCard2:
+                            Control: TypedDataCard@1.0.7
+                            Variant: TextualEdit
+                            Properties:
+                              BorderColor: =RGBA(243, 242, 241, 1)
+                              DataField: ="RelatedModel0"
+                              Default: =ThisItem.RelatedModel
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'RelatedModel0')
+                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, 'RelatedModel0')
+                              Required: =true
+                              Update: =Trim(txtRelatedModel.Value)
+                              Width: =307
+                              X: =1
+                              Y: =2
+                            Children:
+                              - DataCardKey6:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    Height: =22
+                                    Text: =Parent.DisplayName
+                                    Weight: ='TextCanvas.Weight'.Semibold
+                                    Width: =Parent.Width - 48
+                                    Wrap: =false
+                                    X: =24
+                                    Y: =10
+                              - txtRelatedModel:
+                                  Control: TextInput@0.0.54
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    AccessibleLabel: =Parent.DisplayName
+                                    DisplayMode: =Parent.DisplayMode
+                                    Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                                    Required: =Parent.Required
+                                    ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                                    Value: =Parent.Default
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =DataCardKey6.Y + DataCardKey6.Height + 4
+                              - ErrorMessage6:
+                                  Control: Text@0.0.51
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    Height: =30
+                                    Text: =Parent.Error
+                                    Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =txtRelatedModel.Y + txtRelatedModel.Height
+                              - StarVisible6:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldRequired
+                                  Properties:
+                                    Align: ='TextCanvas.Align'.Center
+                                    Height: =30
+                                    Text: ="*"
+                                    Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =30
+                                    Y: =DataCardKey6.Y
                   - btnRequestSave:
                       Control: Button@0.0.45
                       Properties:
                         OnSelect: |-
                           =// =============================
-                          // 신규/수정 저장
+                          // 신규/수정 저장 전 필수값 점검
                           // =============================
-                          SubmitForm(frmRequest);
+                          If(
+                              IsBlank(cmbProjectName.Selected.ID) ||
+                              IsBlank(Trim(txtRelatedModel.Value)) ||
+                              IsBlank(Trim(txtPartDescription.Value)) ||
+                              IsBlank(Trim(txtRequestQty.Value)) ||
+                              IsBlank(dpDesiredDueDate.SelectedDate),
+
+                              Notify(
+                                  "프로젝트명, 관련기종, 품번, 수량, 희망완료일을 모두 올바르게 입력해 주세요.",
+                                  NotificationType.Warning
+                              ),
+
+                              SubmitForm(frmRequest)
+                          );
                         Text: ="저장"
                         Visible: =varRequestMode = "New" || varRequestMode = "Edit"
-                        X: =714
-                        Y: =510
+                        X: =765
+                        Y: =606
                   - btnRequestCancel:
                       Control: Button@0.0.45
                       Properties:
@@ -1693,8 +2190,37 @@ Screens:
                           Set(varSelectedRequest, Defaults(das));
                         Text: ="취소"
                         Visible: =varRequestMode = "New" || varRequestMode = "Edit"
-                        X: =837
-                        Y: =510
+                        X: =885
+                        Y: =606
+            - Icon1:
+                Control: Classic/Icon@2.5.0
+                Properties:
+                  BorderColor: =RGBA(0, 0, 0, 0)
+                  Color: =RGBA(106, 122, 127, 1)
+                  DisabledBorderColor: =RGBA(243, 242, 241, 1)
+                  DisabledColor: =RGBA(220, 220, 220, 1)
+                  DisabledFill: =RGBA(0, 0, 0, 0)
+                  FocusedBorderThickness: =1
+                  Height: =32
+                  HoverBorderColor: =RGBA(0, 0, 0, 0)
+                  HoverColor: =ColorFade(RGBA(98, 100, 167, 1), -30%)
+                  HoverFill: =RGBA(0, 0, 0, 0)
+                  Icon: =Icon.Cancel
+                  OnSelect: |-
+                    =Set(varShowRequestPopup, false);
+                    Set(varRequestMode, "View");
+                    Set(varSelectedRequest, Defaults(das));
+                    Set(varSelectedImageAttachment, Blank());
+                  PaddingBottom: =3
+                  PaddingLeft: =3
+                  PaddingRight: =3
+                  PaddingTop: =3
+                  PressedBorderColor: =RGBA(0, 0, 0, 0)
+                  PressedColor: =ColorFade(RGBA(98, 100, 167, 1), -30%)
+                  PressedFill: =RGBA(0, 0, 0, 0)
+                  Width: =32
+                  X: =974
+                  Y: =11
       - conNotice:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
@@ -1791,3 +2317,9 @@ Screens:
                   Width: =25
                   X: =7
                   Y: =4.5
+      - Text3:
+          Control: ModernText@1.0.0
+          Properties:
+            Text: =txtRelatedModel.Value
+            X: =991
+            Y: =548
