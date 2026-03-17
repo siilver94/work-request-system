@@ -3,6 +3,139 @@ Screens:
     Properties:
       Fill: =RGBA(255, 255, 255, 0.5)
       LoadingSpinnerColor: =RGBA(98, 100, 167, 1)
+      OnVisible: |-
+        =// 앱 바로가기 URL
+        Set(
+            varAppUrl,
+            "https://apps.powerapps.com/play/e/ad9a8659-6733-e9a7-8538-15b993f9459a/a/ce55243d-1e25-4941-aa0e-aa3fdc2576ca?tenantId=f68dbec8-0e62-41cb-98b3-22f1aa40c4ea&hint=59dcc817-6c57-4dc8-ae81-5a7acfe3ae48&sourcetime=1773641347859"
+        );
+
+        //대리승인 팝업
+        Set(varShowSelfApproveConfirmPopup, false);
+
+        // =============================
+        // [1] 현재 로그인 사용자 기본 정보
+        // 사용자 이메일
+        Set(varMyEmail, Lower(User().Email));
+
+        // 사용자 정보 조회
+        Set(
+            varMyInfo,
+            LookUp(
+                UserInfo_DB,
+                Lower('e-mail') = varMyEmail
+            )
+        );
+
+        // [1] UserInfo_DB 이름 컬럼이 있으면 우선 사용
+        Set(
+            varMyNameFromDB,
+            Coalesce(varMyInfo.이름_한글, "")
+        );
+
+        // [2] FullName 정제본
+        Set(
+            varMyNameFromFullName,
+            If(
+                IsBlank(Find("(", User().FullName)),
+                Concatenate(
+                    Trim(Right(User().FullName, Len(User().FullName) - Find(" ", User().FullName))),
+                    Trim(Left(User().FullName, Find(" ", User().FullName)))
+                ),
+                Trim(Left(User().FullName, Find("(", User().FullName) - 1))
+            )
+        );
+
+        // [3] 최종 저장용 이름
+        Set(
+            varMyName,
+            If(
+                !IsBlank(varMyNameFromDB),
+                varMyNameFromDB,
+                varMyNameFromFullName
+            )
+        );
+
+        // =============================
+        // [2] 작업자 이메일 고정
+        // =============================
+        Set(varWorkerEmail, Lower("jung.kim@tym.world"));
+
+        // =============================
+        // [3] 현재 사용자 정보를 UserInfo_DB에서 조회
+        // - Email 컬럼 기준으로 내 정보 1건 조회
+        // =============================
+        Set(
+            varMyInfo,
+            LookUp(
+                UserInfo_DB,
+                Lower('e-mail') = varMyEmail
+            )
+        );
+
+        // =============================
+        // [4] 내 조직 정보 변수화
+        // - 이후 권한 분기, 필터, 신규 등록 시 기본값에 사용
+        // =============================
+        Set(varMyDept, Coalesce(varMyInfo.부문, ""));
+        Set(varMyTeam, Coalesce(varMyInfo.팀, ""));
+        Set(varMyJobGrade, Coalesce(varMyInfo.직급2, ""));
+
+        // =============================
+        // [5] 역할 판단
+        // - 작업자 여부
+        // - 팀장 여부
+        // =============================
+        Set(varIsWorker, varMyEmail = varWorkerEmail);
+        Set(varIsTeamLeader, varMyJobGrade = "팀장");
+
+        // =============================
+        // [6] 화면 상태 변수 초기화
+        // - 팝업 열림 여부
+        // - 현재 선택한 요청
+        // - 화면 모드(New / View / Edit)
+        // =============================
+        Set(varShowRequestPopup, false);
+        Set(varRequestMode, "View");
+        Set(varSelectedRequest, Defaults(das));
+
+        // =============================
+        // [7] 필터 기본값 초기화
+        // - 기간 기본값: 30일
+        // - 검색어: 빈값
+        // - 반려 포함 여부: true
+        // - 완료 포함 여부: true
+        // =============================
+        Set(varPeriodFilter, "30일");
+        Set(varSearchText, "");
+        Set(varIncludeRejected, true);
+        Set(varIncludeCompleted, true);
+
+        // =============================
+        // [8] 날짜 필터용 기본 기간
+        // - 사용자 지정 필터 확장 시 그대로 활용 가능
+        // =============================
+        Set(varDateFrom, DateAdd(Today(), -30, TimeUnit.Days));
+        Set(varDateTo, Now());
+
+        // =============================
+        // [9] 토스트/알림/로딩 관련 기본값
+        // =============================
+        Set(varShowToast, false);
+        Set(varToastMessage, "");
+
+        // =============================
+        // [10] 데이터 새로고침
+        // - 메인 요청 리스트
+        // - 댓글 리스트
+        // - 사용자 정보 리스트
+        // =============================
+        Refresh(das);
+        Refresh(WorkRequestComments_DB);
+        Refresh(UserInfo_DB);
+        // 프로젝트 마스터도 새로고침
+        Refresh(Project_DB);
+        Set(varSelectedImageAttachment, Blank());
     Children:
       - Container1:
           Control: GroupContainer@1.5.0
@@ -295,7 +428,7 @@ Screens:
                                     ThisItem.ApprovalState,
                                     "PendingLeader", "팀장 승인대기",
                                     "PendingWorker", "작업자 수락대기",
-                                    "AcceptedByWorker", "진행중",
+                                    "AcceptedByWorker", "작업완료",
                                     "RejectedByLeader", "팀장 반려",
                                     "RejectedByWorker", "작업자 반려",
                                     "상태없음"
@@ -562,10 +695,10 @@ Screens:
                                     ThisItem.ApprovalState,
                                     "PendingLeader", "팀장 승인대기",
                                     "PendingWorker", "작업자 수락대기",
-                                    "AcceptedByWorker", "진행중",
+                                    "AcceptedByWorker", "작업중",
                                     "RejectedByLeader", "팀장 반려",
                                     "RejectedByWorker", "작업자 반려",
-                                    "상태없음"
+                                    "-"
                                 )
                               VerticalAlignment: =VerticalAlign.Top
                               Width: =Title1_1.Width
@@ -1307,7 +1440,7 @@ Screens:
                       Properties:
                         OnSelect: |-
                           =If(
-                              IsBlank(Trim(lblRejectReasonValue.Text)),
+                              IsBlank(Trim(txtWorkerRejectReason.Text)),
                               Notify("반려 사유를 입력해 주세요.", NotificationType.Warning),
 
                               Patch(
@@ -1322,7 +1455,7 @@ Screens:
                                       RejectedAt: Now(),
                                       RejectedByName: varMyName,
                                       RejectedByEmail: varMyEmail,
-                                      RejectReason: Trim(lblRejectReasonValue.Text),
+                                      RejectReason: Trim(txtWorkerRejectReason.Text),
                                       LastActionByName: varMyName,
                                       LastActionByEmail: varMyEmail,
                                       LastActionAt: Now()
@@ -1335,9 +1468,9 @@ Screens:
                                   {
                                       Title: "Comment",
                                       RequestID: varSelectedRequest.ID,
-                                      RequestTitle: varSelectedRequest.제목,
+                                      RequestTitle: varSelectedRequest.Title,
                                       RequestNo: varSelectedRequest.RequestNo,
-                                      CommentText: varMyName & "님이 작업을 반려했습니다. 사유: " & Trim(lblRejectReasonValue.Text),
+                                      CommentText: varMyName & "님이 작업을 반려했습니다. 사유: " & Trim(txtWorkerRejectReason.Text),
                                       CommentType: "WorkerReject",
                                       CommentByName: varMyName,
                                       CommentByEmail: varMyEmail,
@@ -1346,6 +1479,54 @@ Screens:
                                       IsSystemComment: true,
                                       IsVisible: true
                                   }
+                              );
+
+                              // 팀장 메일 발송
+                              If(
+                                  !IsBlank(varSelectedRequest.ApproverEmail),
+                                  Office365Outlook.SendEmailV2(
+                                      varSelectedRequest.ApproverEmail,
+                                      "[작업의뢰] 작업자 반려 - " & varSelectedRequest.RequestNo,
+                                      Concatenate(
+                                          "<div style='font-family:Segoe UI;'>",
+                                          "<h3>작업자 반려 안내</h3>",
+                                          "<p>작업자가 아래 작업의뢰를 반려했습니다.</p>",
+                                          "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
+                                          "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
+                                          "<p><b>작업자:</b> ", varMyName, "</p>",
+                                          "<p><b>반려사유:</b> ", Trim(txtWorkerRejectReason.Text), "</p>",
+                                          "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
+                                          "</div>"
+                                      ),
+                                      {
+                                          IsHtml: true,
+                                          Importance: "High"
+                                      }
+                                  )
+                              );
+
+                              // 의뢰자 메일 발송
+                              If(
+                                  !IsBlank(varSelectedRequest.RequesterEmail),
+                                  Office365Outlook.SendEmailV2(
+                                      varSelectedRequest.RequesterEmail,
+                                      "[작업의뢰] 작업자 반려 - " & varSelectedRequest.RequestNo,
+                                      Concatenate(
+                                          "<div style='font-family:Segoe UI;'>",
+                                          "<h3>작업자 반려 안내</h3>",
+                                          "<p>의뢰하신 작업이 작업자에 의해 반려되었습니다.</p>",
+                                          "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
+                                          "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
+                                          "<p><b>작업자:</b> ", varMyName, "</p>",
+                                          "<p><b>반려사유:</b> ", Trim(txtWorkerRejectReason.Text), "</p>",
+                                          "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
+                                          "</div>"
+                                      ),
+                                      {
+                                          IsHtml: true,
+                                          Importance: "High"
+                                      }
+                                  )
                               );
 
                               Refresh(das);
@@ -1366,30 +1547,31 @@ Screens:
                       Control: Button@0.0.45
                       Properties:
                         OnSelect: |-
-                          =// 진행 시작 버튼 (예: btnStartWork.OnSelect)
-                          Patch(
+                          =Patch(
                               das,
                               varSelectedRequest,
                               {
                                   Stage: "InProgress",
+                                  ApprovalState: "AcceptedByWorker",
+                                  WorkerName: varMyName,
+                                  WorkerEmail: varMyEmail,
                                   StartedAt: Now(),
-                                  LastActionAt: Now(),
                                   LastActionByName: varMyName,
-                                  LastActionByEmail: varMyEmail
+                                  LastActionByEmail: varMyEmail,
+                                  LastActionAt: Now()
                               }
                           );
 
-                          // 작업 시작 댓글 남기기
                           Patch(
                               WorkRequestComments_DB,
                               Defaults(WorkRequestComments_DB),
                               {
                                   Title: "Comment",
                                   RequestID: varSelectedRequest.ID,
-                                  RequestTitle: varSelectedRequest.제목,
+                                  RequestTitle: varSelectedRequest.Title,
                                   RequestNo: varSelectedRequest.RequestNo,
-                                  CommentText: varMyName & "님이 작업을 시작했습니다.",
-                                  CommentType: "WorkerStart",
+                                  CommentText: varMyName & "님이 작업을 수락하여 진행중 상태로 변경되었습니다.",
+                                  CommentType: "WorkerAccept",
                                   CommentByName: varMyName,
                                   CommentByEmail: varMyEmail,
                                   CommentRole: "Worker",
@@ -1399,10 +1581,57 @@ Screens:
                               }
                           );
 
+                          // 팀장 메일
+                          If(
+                              !IsBlank(varSelectedRequest.ApproverEmail),
+                              Office365Outlook.SendEmailV2(
+                                  varSelectedRequest.ApproverEmail,
+                                  "[작업의뢰] 작업자 수락 완료 - " & varSelectedRequest.RequestNo,
+                                  Concatenate(
+                                      "<div style='font-family:Segoe UI;'>",
+                                      "<h3>작업자 수락 완료</h3>",
+                                      "<p>작업자가 작업을 수락하여 진행중 상태로 전환되었습니다.</p>",
+                                      "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
+                                      "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
+                                      "<p><b>작업자:</b> ", varMyName, "</p>",
+                                      "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
+                                      "</div>"
+                                  ),
+                                  {
+                                      IsHtml: true,
+                                      Importance: "Normal"
+                                  }
+                              )
+                          );
+
+                          // 의뢰자 메일
+                          If(
+                              !IsBlank(varSelectedRequest.RequesterEmail),
+                              Office365Outlook.SendEmailV2(
+                                  varSelectedRequest.RequesterEmail,
+                                  "[작업의뢰] 작업 시작 - " & varSelectedRequest.RequestNo,
+                                  Concatenate(
+                                      "<div style='font-family:Segoe UI;'>",
+                                      "<h3>작업 시작 안내</h3>",
+                                      "<p>작업자가 작업을 수락하여 작업이 시작되었습니다.</p>",
+                                      "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
+                                      "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
+                                      "<p><b>작업자:</b> ", varMyName, "</p>",
+                                      "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
+                                      "</div>"
+                                  ),
+                                  {
+                                      IsHtml: true,
+                                      Importance: "Normal"
+                                  }
+                              )
+                          );
+
                           Refresh(das);
                           Refresh(WorkRequestComments_DB);
                           Set(varSelectedRequest, LookUp(das, ID = varSelectedRequest.ID));
-                          Set(varToastMessage, "작업이 시작되었습니다!");
+
+                          Set(varToastMessage, "작업자가 작업을 수락했습니다.");
                           Set(varShowToast, true);
                         Text: ="작업자승인"
                         Visible: |-
@@ -1415,16 +1644,7 @@ Screens:
                       Control: Button@0.0.45
                       Properties:
                         OnSelect: |-
-                          =// =============================
-                          // 팀장 반려
-                          // - 반려사유 필수
-                          // - 상태 종료
-                          // - 반려정보 저장
-                          // - 댓글 로그 저장
-                          // - 의뢰자 메일 발송
-                          // =============================
-
-                          If(
+                          =If(
                               IsBlank(Trim(txtLeaderRejectReason.Text)),
                               Notify(
                                   "반려 사유를 입력해 주세요.",
@@ -1449,7 +1669,6 @@ Screens:
                                   }
                               );
 
-                              // 반려 이력 댓글 저장
                               Patch(
                                   WorkRequestComments_DB,
                                   Defaults(WorkRequestComments_DB),
@@ -1469,7 +1688,6 @@ Screens:
                                   }
                               );
 
-                              // 의뢰자 메일 발송
                               If(
                                   !IsBlank(varSelectedRequest.RequesterEmail),
                                   Office365Outlook.SendEmailV2(
@@ -1495,10 +1713,7 @@ Screens:
 
                               Refresh(das);
                               Refresh(WorkRequestComments_DB);
-
-                              // 최신 데이터 다시 조회
                               Set(varSelectedRequest, LookUp(das, ID = varSelectedRequest.ID));
-
 
                               Set(varToastMessage, "팀장 반려가 완료되었습니다.");
                               Set(varShowToast, true)
@@ -1612,15 +1827,7 @@ Screens:
                       Control: Button@0.0.45
                       Properties:
                         OnSelect: |-
-                          =// =============================
-                          // 작업 완료 처리
-                          // - 진행중 -> 완료
-                          // - 완료시간 기록
-                          // - 작업 로그 저장
-                          // - 작업자 / 팀장 메일 발송
-                          // =============================
-
-                          Patch(
+                          =Patch(
                               das,
                               varSelectedRequest,
                               {
@@ -1633,7 +1840,6 @@ Screens:
                               }
                           );
 
-                          // 완료 이력 댓글 저장
                           Patch(
                               WorkRequestComments_DB,
                               Defaults(WorkRequestComments_DB),
@@ -1653,7 +1859,7 @@ Screens:
                               }
                           );
 
-                          // 작업자 본인 메일 알림
+                          // 작업자 메일
                           If(
                               !IsBlank(varMyEmail),
                               Office365Outlook.SendEmailV2(
@@ -1662,21 +1868,17 @@ Screens:
                                   Concatenate(
                                       "<div style='font-family:Segoe UI;'>",
                                       "<h3>작업 완료</h3>",
-                                      "<p>아래 작업의뢰가 완료 처리되었습니다.</p>",
+                                      "<p>작업 완료 처리되었습니다.</p>",
                                       "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
                                       "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
-                                      "<p><b>완료일시:</b> ", Text(Now(), "yyyy-mm-dd HH:mm"), "</p>",
                                       "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
                                       "</div>"
                                   ),
-                                  {
-                                      IsHtml: true,
-                                      Importance: "Normal"
-                                  }
+                                  { IsHtml: true, Importance: "Normal" }
                               )
                           );
 
-                          // 팀장 메일 알림
+                          // 팀장 메일
                           If(
                               !IsBlank(varSelectedRequest.ApproverEmail),
                               Office365Outlook.SendEmailV2(
@@ -1685,28 +1887,21 @@ Screens:
                                   Concatenate(
                                       "<div style='font-family:Segoe UI;'>",
                                       "<h3>작업 완료</h3>",
-                                      "<p>아래 작업의뢰가 완료 처리되었습니다.</p>",
+                                      "<p>작업이 완료 처리되었습니다.</p>",
                                       "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
                                       "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
                                       "<p><b>작업자:</b> ", varMyName, "</p>",
-                                      "<p><b>완료일시:</b> ", Text(Now(), "yyyy-mm-dd HH:mm"), "</p>",
                                       "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
                                       "</div>"
                                   ),
-                                  {
-                                      IsHtml: true,
-                                      Importance: "Normal"
-                                  }
+                                  { IsHtml: true, Importance: "Normal" }
                               )
                           );
 
                           Refresh(das);
                           Refresh(WorkRequestComments_DB);
-
-                          // 최신 레코드 다시 로드
                           Set(varSelectedRequest, LookUp(das, ID = varSelectedRequest.ID));
 
-                          // 알림 표시
                           Set(varToastMessage, "작업 완료 처리되었습니다.");
                           Set(varShowToast, true);
                         Text: ="작업완료"
@@ -1716,32 +1911,23 @@ Screens:
                           varSelectedRequest.ApprovalState = "AcceptedByWorker"
                         X: =835
                         Y: =268
-                  - Text1_22:
+                  - lblLeaderRejectReasonTitle:
                       Control: ModernText@1.0.0
                       Properties:
                         FontWeight: =FontWeight.Lighter
-                        Text: ="팀장 반려사유"
+                        Text: ="반려 사유 입력"
                         Visible: |-
-                          =varSelectedRequest.ApprovalState = "RejectedByLeader" 
-                          || varSelectedRequest.ApprovalState = "RejectedByWorker"
+                          =varSelectedRequest.Stage = "Start" &&
+                          varSelectedRequest.ApprovalState = "PendingLeader" &&
+                          varIsTeamLeader &&
+                          varSelectedRequest.RequesterTeamSnapshot = varMyTeam
                         X: =349
                         Y: =296
-                  - txtLeaderRejectReason:
-                      Control: ModernText@1.0.0
-                      Properties:
-                        Height: =56
-                        Text: =varSelectedRequest.RejectReason
-                        Visible: |-
-                          =varSelectedRequest.ApprovalState = "RejectedByLeader" 
-                          || varSelectedRequest.ApprovalState = "RejectedByWorker"
-                        Width: =170
-                        X: =339
-                        Y: =333
                   - lblRejectReasonTitle:
                       Control: ModernText@1.0.0
                       Properties:
                         FontWeight: =FontWeight.Lighter
-                        Text: ="작업자 반려사유"
+                        Text: ="반려 사유"
                         Visible: |-
                           =varSelectedRequest.ApprovalState = "RejectedByLeader" ||
                           varSelectedRequest.ApprovalState = "RejectedByWorker"
@@ -1817,9 +2003,9 @@ Screens:
                           varSelectedRequest.Stage = "Start" &&
                           varSelectedRequest.ApprovalState = "PendingWorker"
                         Width: =132
-                        X: =637
-                        Y: =238
-                  - Text1_25:
+                        X: =536
+                        Y: =321
+                  - lblWorkerRejectReasonTitle:
                       Control: ModernText@1.0.0
                       Properties:
                         FontWeight: =FontWeight.Lighter
@@ -1828,8 +2014,20 @@ Screens:
                           =varIsWorker &&
                           varSelectedRequest.Stage = "Start" &&
                           varSelectedRequest.ApprovalState = "PendingWorker"
-                        X: =637
-                        Y: =186
+                        X: =541
+                        Y: =272
+                  - txtLeaderRejectReason:
+                      Control: ModernTextInput@1.0.0
+                      Properties:
+                        Placeholder: ="팀장 반려 사유를 입력하세요"
+                        Visible: |-
+                          =varSelectedRequest.Stage = "Start" &&
+                          varSelectedRequest.ApprovalState = "PendingLeader" &&
+                          varIsTeamLeader &&
+                          varSelectedRequest.RequesterTeamSnapshot = varMyTeam
+                        Width: =174
+                        X: =353
+                        Y: =382
             - confrmRequest:
                 Control: GroupContainer@1.5.0
                 Variant: ManualLayout
@@ -2763,13 +2961,13 @@ Screens:
                   Width: =456
                   X: =30
                   Y: =9
-            - ButtonCanvas3:
+            - btnSelfApproveYes:
                 Control: Button@0.0.45
                 Properties:
                   OnSelect: |-
                     =// =============================
                     // 의뢰자 본인 대리 승인
-                    // - 확인 팝업에서 예 클릭 시 실행
+                    // - 확인 팝업에서 [예] 클릭 시 실행
                     // - PendingLeader -> PendingWorker
                     // - self-approval 여부 기록
                     // - 작업자 알림 발송
@@ -2790,7 +2988,7 @@ Screens:
                         }
                     );
 
-                    // 댓글 로그
+                    // 댓글 로그 저장
                     Patch(
                         WorkRequestComments_DB,
                         Defaults(WorkRequestComments_DB),
@@ -2843,6 +3041,7 @@ Screens:
                     // 팝업 닫기
                     Set(varShowSelfApproveConfirmPopup, false);
 
+                    // 토스트
                     Set(varToastMessage, "대리 승인이 완료되었습니다.");
                     Set(varShowToast, true);
                   Text: ="예"
