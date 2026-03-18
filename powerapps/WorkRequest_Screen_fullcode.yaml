@@ -311,82 +311,7 @@ Screens:
                         BorderColor: =RGBA(243, 242, 241, 1)
                         FocusedBorderColor: =RGBA(98, 100, 167, 1)
                         FocusedBorderThickness: =2
-                        Items: |-
-                          =If(
-                              !varIncludeCompleted,
-                              Filter(das, false),
-                              If(
-                                  varIsWorker,
-                                  If(
-                                      varIncludeRejected,
-                                      SortByColumns(
-                                          Filter(
-                                              das,
-                                              SubmittedAt >= varDateFrom,
-                                              SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
-                                              Stage = "Completed",
-                                              IsBlank(varSearchText) ||
-                                              StartsWith(제목, varSearchText) ||
-                                              StartsWith(RequesterName, varSearchText) ||
-                                              StartsWith(RequestNo, varSearchText)
-                                          ),
-                                          "CompletedAt",
-                                          SortOrder.Descending
-                                      ),
-                                      SortByColumns(
-                                          Filter(
-                                              das,
-                                              SubmittedAt >= varDateFrom,
-                                              SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
-                                              Stage = "Completed",
-                                              CloseResult <> "RejectedByApprover",
-                                              CloseResult <> "RejectedByWorker",
-                                              IsBlank(varSearchText) ||
-                                              StartsWith(제목, varSearchText) ||
-                                              StartsWith(RequesterName, varSearchText) ||
-                                              StartsWith(RequestNo, varSearchText)
-                                          ),
-                                          "CompletedAt",
-                                          SortOrder.Descending
-                                      )
-                                  ),
-                                  If(
-                                      varIncludeRejected,
-                                      SortByColumns(
-                                          Filter(
-                                              das,
-                                              SubmittedAt >= varDateFrom,
-                                              SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
-                                              Stage = "Completed",
-                                              RequesterEmail = varMyEmail,
-                                              IsBlank(varSearchText) ||
-                                              StartsWith(제목, varSearchText) ||
-                                              StartsWith(RequesterName, varSearchText) ||
-                                              StartsWith(RequestNo, varSearchText)
-                                          ),
-                                          "CompletedAt",
-                                          SortOrder.Descending
-                                      ),
-                                      SortByColumns(
-                                          Filter(
-                                              das,
-                                              SubmittedAt >= varDateFrom,
-                                              SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
-                                              Stage = "Completed",
-                                              RequesterEmail = varMyEmail,
-                                              CloseResult <> "RejectedByApprover",
-                                              CloseResult <> "RejectedByWorker",
-                                              IsBlank(varSearchText) ||
-                                              StartsWith(제목, varSearchText) ||
-                                              StartsWith(RequesterName, varSearchText) ||
-                                              StartsWith(RequestNo, varSearchText)
-                                          ),
-                                          "CompletedAt",
-                                          SortOrder.Descending
-                                      )
-                                  )
-                              )
-                          )
+                        Items: "=If(\r\n    !varIncludeCompleted,\r\n    Filter(das, false),\r\n    If(\r\n        varIsWorker,\r\n        If(\r\n            varIncludeRejected,\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            ),\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                   \r\n                    CloseResult <> \"RejectedByApprover\",\r\n                    CloseResult <> \"RejectedByWorker\",\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            )\r\n        ),\r\n        If(\r\n            varIncludeRejected,\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                    RequesterEmail = varMyEmail,\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            ),\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                    RequesterEmail = varMyEmail,\r\n                    CloseResult <> \"Cancelled\",\r\n                    CloseResult <> \"RejectedByApprover\",\r\n                    CloseResult <> \"RejectedByWorker\",\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            )\r\n        )\r\n    )\r\n)"
                         Width: =315
                         Y: =40
                       Children:
@@ -808,7 +733,7 @@ Screens:
                                   Stage = "Start",
                                   ApprovalState = "PendingWorker",
                                   IsBlank(varSearchText) ||
-                                  StartsWith(Title, varSearchText) ||
+                                  StartsWith(제목, varSearchText) ||
                                   StartsWith(RequesterName, varSearchText) ||
                                   StartsWith(RequestNo, varSearchText)
                               ),
