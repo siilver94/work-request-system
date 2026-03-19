@@ -311,7 +311,37 @@ Screens:
                         BorderColor: =RGBA(243, 242, 241, 1)
                         FocusedBorderColor: =RGBA(98, 100, 167, 1)
                         FocusedBorderThickness: =2
-                        Items: "=If(\r\n    !varIncludeCompleted,\r\n    Filter(das, false),\r\n    If(\r\n        varIsWorker,\r\n        If(\r\n            varIncludeRejected,\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            ),\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                   \r\n                    CloseResult <> \"RejectedByApprover\",\r\n                    CloseResult <> \"RejectedByWorker\",\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            )\r\n        ),\r\n        If(\r\n            varIncludeRejected,\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                    RequesterEmail = varMyEmail,\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            ),\r\n            SortByColumns(\r\n                Filter(\r\n                    das,\r\n                    SubmittedAt >= varDateFrom,\r\n                    SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),\r\n                    Stage = \"Completed\",\r\n                    RequesterEmail = varMyEmail,\r\n                    CloseResult <> \"Cancelled\",\r\n                    CloseResult <> \"RejectedByApprover\",\r\n                    CloseResult <> \"RejectedByWorker\",\r\n                    IsBlank(varSearchText) ||\r\n                    StartsWith(제목, varSearchText) ||\r\n                    StartsWith(RequesterName, varSearchText) ||\r\n                    StartsWith(RequestNo, varSearchText)\r\n                ),\r\n                \"CompletedAt\",\r\n                SortOrder.Descending\r\n            )\r\n        )\r\n    )\r\n)"
+                        Items: |-
+                          =SortByColumns(
+                              Filter(
+                                  das,
+                                  SubmittedAt >= varDateFrom,
+                                  SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
+                                  Stage = "Completed",
+
+                                  // 완료/반려 토글 조건
+                                  (
+                                      (varIncludeCompleted && varIncludeRejected) ||
+                                      (varIncludeCompleted && !varIncludeRejected && CloseResult <> "Cancelled") ||
+                                      (!varIncludeCompleted && varIncludeRejected && CloseResult = "Cancelled")
+                                  ),
+
+                                  // 작업자 / 일반사용자 조건
+                                  If(
+                                      varIsWorker,
+                                      true,
+                                      RequesterEmail = varMyEmail
+                                  ),
+
+                                  // 검색 조건 - 제목/요청자/요청번호 중간 포함 검색
+                                  IsBlank(Trim(txtSearch.Text)) ||
+                                  Lower(Trim(txtSearch.Text)) in Lower(제목) ||
+                                  Lower(Trim(txtSearch.Text)) in Lower(RequesterName) ||
+                                  Lower(Trim(txtSearch.Text)) in Lower(RequestNo)
+                              ),
+                              "CompletedAt",
+                              SortOrder.Descending
+                          )
                         Width: =315
                         Y: =40
                       Children:
@@ -406,6 +436,18 @@ Screens:
                               PressedFill: =RGBA(0,0,0,0)
                               TabIndex: =0
                               Width: =Parent.TemplateWidth
+                        - Subtitle1_7:
+                            Control: FluentV8/Label@1.8.6
+                            Properties:
+                              FontSize: =9
+                              FontWeight: =FontWeight.Normal
+                              Height: =24
+                              OnSelect: =Select(Parent)
+                              TabIndex: =-1
+                              Text: =ThisItem.제목
+                              VerticalAlignment: =VerticalAlign.Top
+                              Width: =80
+                              X: =72
       - con_searchFilter:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
@@ -549,20 +591,22 @@ Screens:
                         Items: |-
                           =If(
                               varIsWorker,
+                              // 작업자일 때: 본인이 맡은 작업만 표시
                               SortByColumns(
                                   Filter(
                                       das,
                                       SubmittedAt >= varDateFrom,
                                       SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                       Stage = "InProgress",
-                                      IsBlank(varSearchText) ||
-                                      StartsWith(제목, varSearchText) ||
-                                      StartsWith(RequesterName, varSearchText) ||
-                                      StartsWith(RequestNo, varSearchText)
+                                      IsBlank(txtSearch.Text) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(제목))) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(RequesterName))) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(RequestNo)))
                                   ),
                                   "StartedAt",
                                   SortOrder.Descending
                               ),
+                              // 팀장·일반 사용자: 본인이 등록한 작업만 표시
                               SortByColumns(
                                   Filter(
                                       das,
@@ -570,10 +614,10 @@ Screens:
                                       SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                       Stage = "InProgress",
                                       RequesterEmail = varMyEmail,
-                                      IsBlank(varSearchText) ||
-                                      StartsWith(제목, varSearchText) ||
-                                      StartsWith(RequesterName, varSearchText) ||
-                                      StartsWith(RequestNo, varSearchText)
+                                      IsBlank(txtSearch.Text) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(제목))) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(RequesterName))) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(RequestNo)))
                                   ),
                                   "StartedAt",
                                   SortOrder.Descending
@@ -673,6 +717,19 @@ Screens:
                               PressedFill: =RGBA(0,0,0,0)
                               TabIndex: =0
                               Width: =Parent.TemplateWidth
+                        - Subtitle1_8:
+                            Control: FluentV8/Label@1.8.6
+                            Properties:
+                              FontSize: =9
+                              FontWeight: =FontWeight.Normal
+                              Height: =24
+                              OnSelect: =Select(Parent)
+                              TabIndex: =-1
+                              Text: =ThisItem.제목
+                              VerticalAlignment: =VerticalAlign.Top
+                              Width: =80
+                              X: =72
+                              Y: =2
       - Container7:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
@@ -725,23 +782,26 @@ Screens:
                         Items: |-
                           =If(
                               varIsWorker,
+                              // 작업자일 때: 본인이 맡은 작업만 필터
                               SortByColumns(
-                              Filter(
-                                  das,
-                                  SubmittedAt >= varDateFrom,
-                                  SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
-                                  Stage = "Start",
-                                  ApprovalState = "PendingWorker",
-                                  IsBlank(varSearchText) ||
-                                  StartsWith(제목, varSearchText) ||
-                                  StartsWith(RequesterName, varSearchText) ||
-                                  StartsWith(RequestNo, varSearchText)
+                                  Filter(
+                                      das,
+                                      SubmittedAt >= varDateFrom,
+                                      SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
+                                      Stage = "Start",
+                                      ApprovalState = "PendingWorker",
+                                      // 검색 조건: 검색어가 제목·요청자·요청번호 어디에든 포함되는지 검사
+                                      IsBlank(txtSearch.Text) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(제목))) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(RequesterName))) ||
+                                      !IsBlank(Find(Lower(txtSearch.Text), Lower(RequestNo)))
+                                  ),
+                                  "SubmittedAt",
+                                  SortOrder.Descending
                               ),
-                              "SubmittedAt",
-                              SortOrder.Descending
-                          ),
                               If(
                                   varIsTeamLeader,
+                                  // 팀장일 때: 자신의 요청이거나 팀원 요청 중 승인 대기 건
                                   SortByColumns(
                                       Filter(
                                           das,
@@ -749,18 +809,19 @@ Screens:
                                           SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                           Stage = "Start",
                                           RequesterEmail = varMyEmail ||
-                                          (
-                                              RequesterTeamSnapshot = varMyTeam &&
-                                              ApprovalState = "PendingLeader"
-                                          ),
-                                          IsBlank(varSearchText) ||
-                                          StartsWith(제목, varSearchText) ||
-                                          StartsWith(RequesterName, varSearchText) ||
-                                          StartsWith(RequestNo, varSearchText)
+                                              (
+                                                  RequesterTeamSnapshot = varMyTeam &&
+                                                  ApprovalState = "PendingLeader"
+                                              ),
+                                          IsBlank(txtSearch.Text) ||
+                                          !IsBlank(Find(Lower(txtSearch.Text), Lower(제목))) ||
+                                          !IsBlank(Find(Lower(txtSearch.Text), Lower(RequesterName))) ||
+                                          !IsBlank(Find(Lower(txtSearch.Text), Lower(RequestNo)))
                                       ),
                                       "SubmittedAt",
                                       SortOrder.Descending
                                   ),
+                                  // 그 외의 경우: 본인이 등록한 요청만
                                   SortByColumns(
                                       Filter(
                                           das,
@@ -768,10 +829,10 @@ Screens:
                                           SubmittedAt < DateAdd(Today(), 1, TimeUnit.Days),
                                           Stage = "Start",
                                           RequesterEmail = varMyEmail,
-                                          IsBlank(varSearchText) ||
-                                          StartsWith(제목, varSearchText) ||
-                                          StartsWith(RequesterName, varSearchText) ||
-                                          StartsWith(RequestNo, varSearchText)
+                                          IsBlank(txtSearch.Text) ||
+                                          !IsBlank(Find(Lower(txtSearch.Text), Lower(제목))) ||
+                                          !IsBlank(Find(Lower(txtSearch.Text), Lower(RequesterName))) ||
+                                          !IsBlank(Find(Lower(txtSearch.Text), Lower(RequestNo)))
                                       ),
                                       "SubmittedAt",
                                       SortOrder.Descending
