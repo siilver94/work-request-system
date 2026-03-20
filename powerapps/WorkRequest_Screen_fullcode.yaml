@@ -136,6 +136,7 @@ Screens:
         // 프로젝트 마스터도 새로고침
         Refresh(Project_DB);
         Set(varSelectedImageAttachment, Blank());
+        Set(varShowDeleteConfirmPopup, false);
     Children:
       - Container1:
           Control: GroupContainer@1.5.0
@@ -1428,7 +1429,6 @@ Screens:
                           =If(
                               IsBlank(Trim(txtWorkerRejectReason.Text)),
                               Notify("반려 사유를 입력해 주세요.", NotificationType.Warning),
-
                               Patch(
                                   das,
                                   varSelectedRequest,
@@ -1447,7 +1447,7 @@ Screens:
                                       LastActionAt: Now()
                                   }
                               );
-
+                              // 댓글 로그 추가 (기존과 동일)
                               Patch(
                                   WorkRequestComments_DB,
                                   Defaults(WorkRequestComments_DB),
@@ -1524,9 +1524,14 @@ Screens:
                           )
                         Text: ="작업자반려"
                         Visible: |-
-                          =varIsWorker &&
-                          varSelectedRequest.Stage = "Start" &&
-                          varSelectedRequest.ApprovalState = "PendingWorker"
+                          =    varIsWorker &&
+                              (
+                                  (varSelectedRequest.Stage = "Start" 
+                                   && varSelectedRequest.ApprovalState = "PendingWorker")
+                                  ||
+                                  (varSelectedRequest.Stage = "InProgress"
+                                   && varSelectedRequest.ApprovalState = "AcceptedByWorker")
+                              )
                         X: =877
                         Y: =381
                   - btnWorkerAccept:
@@ -1985,9 +1990,14 @@ Screens:
                       Control: ModernTextInput@1.0.0
                       Properties:
                         Visible: |-
-                          =varIsWorker &&
-                          varSelectedRequest.Stage = "Start" &&
-                          varSelectedRequest.ApprovalState = "PendingWorker"
+                          =    varIsWorker &&
+                              (
+                                  (varSelectedRequest.Stage = "Start" 
+                                   && varSelectedRequest.ApprovalState = "PendingWorker")
+                                  ||
+                                  (varSelectedRequest.Stage = "InProgress"
+                                   && varSelectedRequest.ApprovalState = "AcceptedByWorker")
+                              )
                         Width: =132
                         X: =536
                         Y: =321
@@ -2014,6 +2024,18 @@ Screens:
                         Width: =174
                         X: =353
                         Y: =382
+                  - btnRequesterDelete:
+                      Control: Button@0.0.45
+                      Properties:
+                        OnSelect: =Set(varShowDeleteConfirmPopup, true);
+                        Text: ="의뢰 삭제"
+                        Visible: |-
+                          =    // 요청자 본인이며, 팀장 승인대기 상태일 때만 보이도록
+                              varSelectedRequest.Stage = "Start"
+                              && varSelectedRequest.ApprovalState = "PendingLeader"
+                              && Lower(varSelectedRequest.RequesterEmail) = varMyEmail
+                        X: =718
+                        Y: =328
             - confrmRequest:
                 Control: GroupContainer@1.5.0
                 Variant: ManualLayout
@@ -2401,64 +2423,6 @@ Screens:
                                     Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =30
                                     Y: =DataCardKey2.Y
-                        - RequestQty_DataCard1:
-                            Control: TypedDataCard@1.0.7
-                            Variant: NumberEdit
-                            Properties:
-                              BorderColor: =RGBA(243, 242, 241, 1)
-                              DataField: ="RequestQty"
-                              Default: =ThisItem.RequestQty
-                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,RequestQty)
-                              Required: =false
-                              Update: =Trim(txtRequestQty.Value)
-                              Width: =307
-                              X: =0
-                              Y: =1
-                            Children:
-                              - DataCardKey5:
-                                  Control: Text@0.0.51
-                                  MetadataKey: FieldName
-                                  Properties:
-                                    Height: =22
-                                    Text: =Parent.DisplayName&"(수량)"
-                                    Weight: ='TextCanvas.Weight'.Semibold
-                                    Width: =Parent.Width - 48
-                                    Wrap: =false
-                                    X: =24
-                                    Y: =10
-                              - ErrorMessage5:
-                                  Control: Text@0.0.51
-                                  MetadataKey: ErrorMessage
-                                  Properties:
-                                    Height: =30
-                                    Text: =Parent.Error
-                                    Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
-                                    Width: =Parent.Width - 48
-                                    X: =24
-                                    Y: =
-                              - StarVisible5:
-                                  Control: Text@0.0.51
-                                  MetadataKey: FieldRequired
-                                  Properties:
-                                    Align: ='TextCanvas.Align'.Center
-                                    Height: =30
-                                    Text: ="*"
-                                    Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
-                                    Width: =30
-                                    Y: =DataCardKey5.Y
-                              - txtRequestQty:
-                                  Control: TextInput@0.0.54
-                                  Properties:
-                                    AccessibleLabel: =Parent.DisplayName
-                                    DisplayMode: =Parent.DisplayMode
-                                    Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
-                                    Placeholder: ="수량 입력"
-                                    Required: =Parent.Required
-                                    ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
-                                    Value: =Parent.Default
-                                    Width: =Parent.Width - 48
-                                    X: =30
-                                    Y: =40
                         - 첨부 파일_DataCard1:
                             Control: TypedDataCard@1.0.7
                             Variant: ClassicAttachmentsEdit
@@ -2470,7 +2434,7 @@ Screens:
                               Required: =false
                               Update: =DataCardValue12.Attachments
                               Width: =307
-                              X: =1
+                              X: =0
                               Y: =1
                             Children:
                               - DataCardKey12:
@@ -2590,7 +2554,7 @@ Screens:
                               Required: =true
                               Update: =dpDesiredDueDate.SelectedDate
                               Width: =307
-                              X: =2
+                              X: =1
                               Y: =1
                             Children:
                               - DataCardKey13:
@@ -2633,8 +2597,8 @@ Screens:
                                 )
                               Visible: =false
                               Width: =307
-                              X: =0
-                              Y: =2
+                              X: =2
+                              Y: =1
                             Children:
                               - DataCardKey15:
                                   Control: Text@0.0.51
@@ -2692,7 +2656,7 @@ Screens:
                               Required: =true
                               Update: =Trim(txtRelatedModel.Value)
                               Width: =307
-                              X: =1
+                              X: =0
                               Y: =2
                             Children:
                               - DataCardKey6:
@@ -2739,6 +2703,65 @@ Screens:
                                     Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
                                     Width: =30
                                     Y: =DataCardKey6.Y
+                        - RequestQty_DataCard1:
+                            Control: TypedDataCard@1.0.7
+                            Variant: TextualEdit
+                            Properties:
+                              BorderColor: =RGBA(243, 242, 241, 1)
+                              DataField: ="RequestQty"
+                              Default: =ThisItem.RequestQty
+                              DisplayName: =DataSourceInfo([@das],DataSourceInfo.DisplayName,'RequestQty')
+                              MaxLength: =DataSourceInfo([@das], DataSourceInfo.MaxLength, 'RequestQty')
+                              Required: =true
+                              Update: =txtRequestQty.Value
+                              Width: =307
+                              X: =1
+                              Y: =2
+                            Children:
+                              - DataCardKey4:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldName
+                                  Properties:
+                                    Height: =22
+                                    Text: =Parent.DisplayName
+                                    Weight: ='TextCanvas.Weight'.Semibold
+                                    Width: =Parent.Width - 48
+                                    Wrap: =false
+                                    X: =24
+                                    Y: =10
+                              - txtRequestQty:
+                                  Control: TextInput@0.0.54
+                                  MetadataKey: FieldValue
+                                  Properties:
+                                    AccessibleLabel: =Parent.DisplayName
+                                    DisplayMode: =Parent.DisplayMode
+                                    Mode: ="'TextInputCanvas.Mode'.TextInputModeSingleLine"
+                                    Required: =Parent.Required
+                                    ValidationState: =If(IsBlank(Parent.Error), "None", "Error")
+                                    Value: =Parent.Default
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =DataCardKey4.Y + DataCardKey4.Height + 4
+                              - ErrorMessage4:
+                                  Control: Text@0.0.51
+                                  MetadataKey: ErrorMessage
+                                  Properties:
+                                    Height: =30
+                                    Text: =Parent.Error
+                                    Visible: =And(!IsBlank(Parent.Error), Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =Parent.Width - 48
+                                    X: =24
+                                    Y: =txtRequestQty.Y + txtRequestQty.Height
+                              - StarVisible4:
+                                  Control: Text@0.0.51
+                                  MetadataKey: FieldRequired
+                                  Properties:
+                                    Align: ='TextCanvas.Align'.Center
+                                    Height: =30
+                                    Text: ="*"
+                                    Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                                    Width: =30
+                                    Y: =DataCardKey4.Y
                   - btnRequestSave:
                       Control: Button@0.0.45
                       Properties:
@@ -2921,9 +2944,12 @@ Screens:
             FocusedBorderColor: =RGBA(98, 100, 167, 1)
             Height: =768
             HoverFill: =
-            OnSelect: =Set(varShowSelfApproveConfirmPopup, false)
+            OnSelect: |-
+              =Set(varShowSelfApproveConfirmPopup, false);
+              Set(varShowDeleteConfirmPopup, false);
             PressedFill: =RGBA(0, 0, 0, 0)
-            Visible: =varShowSelfApproveConfirmPopup
+            Visible: |+
+              =varShowSelfApproveConfirmPopup || varShowDeleteConfirmPopup
             Width: =1366
       - conSelfApproveConfirmPopup:
           Control: GroupContainer@1.5.0
@@ -3040,3 +3066,45 @@ Screens:
                   Text: ="아니오"
                   X: =267
                   Y: =189
+      - conDeleteConfirmPopup:
+          Control: GroupContainer@1.5.0
+          Variant: ManualLayout
+          Properties:
+            Fill: =RGBA(255, 255, 255, 1)
+            Visible: |+
+              =varShowDeleteConfirmPopup
+            X: =460
+            Y: =266
+          Children:
+            - Text4:
+                Control: ModernText@1.0.0
+                Properties:
+                  Text: ="정말 삭제하시겠습니까?"
+                  Width: =198
+                  X: =148
+                  Y: =44
+            - btnDeleteYes:
+                Control: Button@0.0.45
+                Properties:
+                  OnSelect: |-
+                    =    // 실제 삭제 로직
+                        Remove(das, varSelectedRequest);
+                        RemoveIf(WorkRequestComments_DB, RequestID = varSelectedRequest.ID);
+                        Refresh(das);
+                        Refresh(WorkRequestComments_DB);
+                        // 팝업/폼 정리
+                        Set(varShowDeleteConfirmPopup, false);
+                        Set(varShowRequestPopup, false);
+                        Set(varSelectedRequest, Defaults(das));
+                        Set(varToastMessage, "작업의뢰를 삭제했습니다.");
+                        Set(varShowToast, true);
+                  Text: ="예"
+                  X: =108
+                  Y: =120
+            - btnDeleteNo:
+                Control: Button@0.0.45
+                Properties:
+                  OnSelect: =Set(varShowDeleteConfirmPopup, false);
+                  Text: ="아니오"
+                  X: =287
+                  Y: =120
