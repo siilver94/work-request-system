@@ -1,7 +1,7 @@
 Screens:
   WorkRequest_Screen:
     Properties:
-      Fill: =RGBA(255, 255, 255, 0.5)
+      Fill: =
       LoadingSpinnerColor: =RGBA(98, 100, 167, 1)
       OnVisible: |-
         =// 앱 바로가기 URL
@@ -142,46 +142,52 @@ Screens:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
-            Fill: =RGBA(207, 202, 196, 0.2)
-            Height: =733
+            Fill: |-
+              =//RGBA(207, 202, 196, 0.2)
+              RGBA(245, 247, 250, 1)
+            Height: =768
             Width: =1366
-            Y: =35
           Children:
             - TextCanvas3:
                 Control: Text@0.0.51
                 Properties:
-                  BorderColor: =RGBA(53, 61, 63, 1)
+                  Align: ='TextCanvas.Align'.Start
+                  BorderColor: =RGBA(214, 221, 224, 1)
                   BorderStyle: =BorderStyle.Solid
                   BorderThickness: =0.5
                   Fill: =RGBA(255, 255, 255, 1)
                   Font: =Font.Verdana
+                  FontColor: =RGBA(52, 64, 84, 1)
                   Height: =28
                   Text: ="        조회 필터"
                   VerticalAlign: =VerticalAlign.Middle
-                  Weight: ='TextCanvas.Weight'.Regular
-                  Width: =145
+                  Weight: ='TextCanvas.Weight'.Semibold
+                  Width: =126
                   X: =8
-                  Y: =32
+                  Y: =64
             - TextCanvas3_1:
                 Control: Text@0.0.51
+                Group: Group1
                 Properties:
-                  BorderColor: =RGBA(53, 61, 63, 1)
+                  BorderColor: =RGBA(214, 221, 224, 1)
                   BorderStyle: =BorderStyle.Solid
                   BorderThickness: =0.5
                   Fill: =RGBA(255, 255, 255, 1)
                   Font: =Font.Verdana
+                  FontColor: =RGBA(52, 64, 84, 1)
                   Height: =28
                   Text: ="        작업 목록"
                   VerticalAlign: =VerticalAlign.Middle
-                  Weight: ='TextCanvas.Weight'.Regular
+                  Weight: ='TextCanvas.Weight'.Semibold
                   Width: =120
                   X: =293
-                  Y: =32
+                  Y: =64
             - Icon3_1:
                 Control: Classic/Icon@2.5.0
+                Group: Group1
                 Properties:
                   BorderColor: =RGBA(0, 0, 0, 0)
-                  Color: =RGBA(13, 50, 61, 1)
+                  Color: =RGBA(53, 61, 63, 1)
                   DisabledBorderColor: =RGBA(243, 242, 241, 1)
                   DisabledColor: =RGBA(220, 220, 220, 1)
                   DisabledFill: =RGBA(0, 0, 0, 0)
@@ -198,29 +204,31 @@ Screens:
                   PressedColor: =ColorFade(RGBA(98, 100, 167, 1), -30%)
                   PressedFill: =RGBA(0, 0, 0, 0)
                   Width: =24
-                  X: =301
-                  Y: =34
+                  X: =300
+                  Y: =66
       - Container11:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
             Fill: =RGBA(255, 255, 255, 1)
             Height: =41
-            Width: =242
-            X: =1111
+            Width: =119
+            X: =1234
             Y: =52
           Children:
             - new_btn:
                 Control: Button@0.0.45
                 Properties:
                   Appearance: ='ButtonCanvas.Appearance'.Secondary
-                  BorderColor: =RGBA(106, 122, 127, 1)
+                  BorderColor: =RGBA(27, 38, 59, 1)
                   BorderStyle: =BorderStyle.Solid
                   BorderThickness: =0.3
                   Font: =Font.Verdana
+                  FontColor: =RGBA(27, 38, 59, 1)
                   FontSize: =11
                   Height: =24
                   Icon: ="Add"
+                  IconStyle: ='ButtonCanvas.IconStyle'.Filled
                   Layout: ='ButtonCanvas.Layout'.IconBefore
                   OnSelect: |-
                     =// =============================
@@ -237,6 +245,7 @@ Screens:
                     // 팝업 열기
                     Set(varShowRequestPopup, true);
                   Text: ="작업의뢰"
+                  VerticalAlign: =VerticalAlign.Middle
                   Width: =95
                   X: =12
                   Y: =9
@@ -267,6 +276,8 @@ Screens:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
+            BorderColor: =RGBA(223, 228, 234, 1)
+            BorderThickness: =1
             Fill: =RGBA(255, 255, 255, 1)
             Height: =637
             Width: =340
@@ -278,6 +289,7 @@ Screens:
                 Variant: ManualLayout
                 Properties:
                   BorderStyle: =BorderStyle.None
+                  Fill: =RGBA(255, 255, 255, 1)
                   Height: =615
                   PaddingBottom: |+
                     =10
@@ -289,7 +301,7 @@ Screens:
                       Control: GroupContainer@1.5.0
                       Variant: ManualLayout
                       Properties:
-                        Fill: =RGBA(45, 128, 40, 1)
+                        Fill: =RGBA(34, 139, 34, 1)
                         Height: =31
                         Width: =315
                       Children:
@@ -343,65 +355,139 @@ Screens:
                               "CompletedAt",
                               SortOrder.Descending
                           )
+                        TemplateSize: =85
                         Width: =315
                         Y: =40
                       Children:
-                        - Title1_2:
+                        - Rectangle1_4:
+                            Control: Rectangle@2.3.0
+                            Properties:
+                              BorderColor: =RGBA(226, 232, 240, 1)
+                              BorderThickness: =0.5
+                              DisabledFill: =RGBA(0,0,0,0)
+                              Fill: =RGBA(240, 253, 244, 0.3)
+                              FocusedBorderColor: =RGBA(98, 100, 167, 1)
+                              Height: =83
+                              HoverFill: =RGBA(0,0,0,0)
+                              OnSelect: =
+                              PressedFill: =RGBA(0,0,0,0)
+                              TabIndex: =0
+                              Width: =306
+                              X: =4
+                              Y: =2
+                        - Requester_2:
                             Control: FluentV8/Label@1.8.6
                             Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
+                              Color: =RGBA(71, 85, 105, 1)
+                              Font: =Font.Verdana
+                              FontSize: =8.5
+                              FontWeight: =FontWeight.Normal
+                              Height: =25
                               OnSelect: =Select(Parent)
                               TabIndex: =-1
                               Text: =ThisItem.RequesterName & " / " & ThisItem.RequesterTeamSnapshot
                               VerticalAlignment: =VerticalAlign.Top
-                              Width: =163
-                              X: =152
-                              Y: =((Parent.TemplateHeight - 36) / 2) - 4
-                        - Subtitle1_4:
+                              Width: =Parent.TemplateWidth - 24
+                              X: =16
+                              Y: =46
+                        - Title_2:
                             Control: FluentV8/Label@1.8.6
                             Properties:
-                              FontSize: =9
+                              Alignment: =Align.Left
+                              Color: =RGBA(17, 24, 39, 1)
+                              Font: =Font.Verdana
                               FontWeight: =FontWeight.Normal
-                              Height: =24
+                              Height: =22
                               OnSelect: =Select(Parent)
                               TabIndex: =-1
-                              Text: =Text(ThisItem.SubmittedAt, "yyyy.mm.dd")
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =Title1_2.Width
-                              X: =Title1_2.X
-                              Y: =Title1_2.Y + Title1_2.Height - 6
-                        - Subtitle1_5:
-                            Control: FluentV8/Label@1.8.6
+                              Text: =ThisItem.제목
+                              VerticalAlignment: =VerticalAlign.Middle
+                              Width: =Parent.TemplateWidth - 24
+                              X: =16
+                              Y: =23
+                        - Stage_2:
+                            Control: Badge@0.0.24
                             Properties:
-                              FontSize: =9
-                              FontWeight: =FontWeight.Normal
-                              Height: =24
-                              OnSelect: =Select(Parent)
-                              TabIndex: =-1
-                              Text: |-
+                              Appearance: ='BadgeCanvas.Appearance'.Outline
+                              BasePaletteColor: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", RGBA(254, 243, 199, 1),
+                                    "PendingWorker", RGBA(255, 237, 213, 1),
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", RGBA(220, 252, 231, 1), RGBA(224, 242, 254, 1)),
+                                    "RejectedByLeader", RGBA(254, 226, 226, 1),
+                                    "RejectedByWorker", RGBA(254, 226, 226, 1),
+                                    RGBA(241, 245, 249, 1)
+                                )
+                              Content: |-
                                 =Switch(
                                     ThisItem.ApprovalState,
                                     "PendingLeader", "팀장 승인대기",
                                     "PendingWorker", "작업자 수락대기",
-                                    "AcceptedByWorker", "작업완료",
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", "작업완료", "작업중"),
                                     "RejectedByLeader", "팀장 반려",
                                     "RejectedByWorker", "작업자 반려",
-                                    "상태없음"
+                                    "-"
                                 )
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =Title1_2.Width
-                              X: =9
-                              Y: =2
-                        - Rectangle3:
+                              Font: =Font.Verdana
+                              FontColor: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", RGBA(180, 83, 9, 1),
+                                    "PendingWorker", RGBA(194, 65, 12, 1),
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", RGBA(21, 128, 61, 1), RGBA(3, 105, 161, 1)),
+                                    "RejectedByLeader", RGBA(185, 28, 28, 1),
+                                    "RejectedByWorker", RGBA(185, 28, 28, 1),
+                                    RGBA(71, 85, 105, 1)
+                                )
+                              FontSize: =9
+                              FontWeight: =FontWeight.Semibold
+                              Height: =18
+                              Shape: ='BadgeCanvas.Shape'.Circular
+                              Width: =75
+                              X: =12
+                              Y: =5
+                        - Text5_2:
+                            Control: ModernText@1.0.0
+                            Properties:
+                              Color: |-
+                                =If(
+                                    IsBlank(ThisItem.DesiredDueDate),
+                                    RGBA(100, 116, 139, 1),
+                                    If(
+                                        ThisItem.DesiredDueDate < Today(),
+                                        RGBA(220, 38, 38, 1),
+                                        If(
+                                            DateDiff(Today(), ThisItem.DesiredDueDate, TimeUnit.Days) <= 3,
+                                            RGBA(217, 119, 6, 1),
+                                            RGBA(100, 116, 139, 1)
+                                        )
+                                    )
+                                )
+                              Font: =Font.Verdana
+                              Height: =22
+                              OnSelect: =Select(Parent)
+                              Size: =8.5
+                              Text: |-
+                                ="요청 " & Text(ThisItem.SubmittedAt, "yyyy.mm.dd") &
+                                "  | 🔴 마감 " &
+                                If(
+                                    IsBlank(ThisItem.DesiredDueDate),
+                                    "-",
+                                    Text(ThisItem.DesiredDueDate, "yyyy.mm.dd")
+                                )
+                              Width: =Parent.TemplateWidth - 24
+                              X: =12
+                              Y: =63
+                        - Rectangle1_5:
                             Control: Rectangle@2.3.0
                             Properties:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DisabledFill: =RGBA(0,0,0,0)
-                              Fill: =RGBA(0,0,0,0)
+                              Fill: =RGBA(0, 0, 0, 0)
                               FocusedBorderColor: =RGBA(98, 100, 167, 1)
-                              Height: =Parent.TemplateHeight
-                              HoverFill: =RGBA(0,0,0,0)
+                              Height: =85
+                              HoverFill: =RGBA(248, 250, 252, 0.3)
                               OnSelect: |-
                                 =Set(varSelectedRequest, ThisItem);
                                 Set(varRequestMode, "View");
@@ -434,25 +520,15 @@ Screens:
                                     )
                                 );
                                 Set(varShowRequestPopup, true);
-                              PressedFill: =RGBA(0,0,0,0)
+                              PressedFill: =
                               TabIndex: =0
                               Width: =Parent.TemplateWidth
-                        - Subtitle1_7:
-                            Control: FluentV8/Label@1.8.6
-                            Properties:
-                              FontSize: =9
-                              FontWeight: =FontWeight.Normal
-                              Height: =24
-                              OnSelect: =Select(Parent)
-                              TabIndex: =-1
-                              Text: =ThisItem.제목
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =80
-                              X: =72
       - con_searchFilter:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
+            BorderColor: =RGBA(223, 228, 234, 1)
+            BorderThickness: =1
             Fill: =RGBA(255, 255, 255, 1)
             Height: =637
             Width: =271
@@ -463,9 +539,10 @@ Screens:
                 Control: DropDown@0.0.45
                 Properties:
                   DefaultSelectedItems: =[varPeriodFilter]
-                  Items: =["30일","90일","사용자지정"]
+                  Items: =["30일","90일","180일"]
                   OnChange: |-
-                    =Set(varPeriodFilter, ddPeriodFilter.Selected.Value);
+                    =// ddPeriodFilter.OnChange
+                    Set(varPeriodFilter, ddPeriodFilter.Selected.Value);
 
                     // 기간 계산
                     If(
@@ -479,10 +556,11 @@ Screens:
                     );
 
                     If(
-                        varPeriodFilter = "사용자지정",
-                        Set(varDateFrom, Today())
+                        varPeriodFilter = "180일",
+                        Set(varDateFrom, DateAdd(Today(), -180, TimeUnit.Days))
                     );
 
+                    // 조회 기간 끝은 항상 현재 시각
                     Set(varDateTo, Now());
                   Width: =182
                   X: =10
@@ -498,31 +576,31 @@ Screens:
                   Size: =13
                   Width: =236
                   X: =10
-                  Y: =108
+                  Y: =112
             - tglIncludeCompleted:
                 Control: Toggle@1.1.5
                 Properties:
                   Checked: =varIncludeCompleted
                   Font: =Font.Verdana
-                  FontSize: =13
+                  FontSize: =14
                   Label: ="완료 포함"
                   OnCheck: =Set(varIncludeCompleted, true)
                   OnUncheck: =Set(varIncludeCompleted, false)
                   Width: =137
-                  X: =10
-                  Y: =151
+                  X: =2
+                  Y: =155
             - tglIncludeRejected:
                 Control: Toggle@1.1.5
                 Properties:
                   Checked: =varIncludeRejected
                   Font: =Font.Verdana
-                  FontSize: =13
+                  FontSize: =14
                   Label: ="반려 포함"
                   OnCheck: =Set(varIncludeRejected, true)
                   OnUncheck: =Set(varIncludeRejected, false)
                   Width: =141
-                  X: =10
-                  Y: =186
+                  X: =2
+                  Y: =194
             - Text2:
                 Control: ModernText@1.0.0
                 Properties:
@@ -538,12 +616,15 @@ Screens:
                   Font: =Font.Verdana
                   Size: =14
                   Text: ="검색"
+                  Width: =67
                   X: =10
-                  Y: =76
+                  Y: =80
       - Container8:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
+            BorderColor: =RGBA(223, 228, 234, 1)
+            BorderThickness: =1
             Fill: =RGBA(255, 255, 255, 1)
             Height: =637
             Width: =340
@@ -555,6 +636,7 @@ Screens:
                 Variant: ManualLayout
                 Properties:
                   BorderStyle: =BorderStyle.None
+                  Fill: =RGBA(255, 255, 255, 1)
                   Height: =615
                   PaddingBottom: |+
                     =10
@@ -566,7 +648,7 @@ Screens:
                       Control: GroupContainer@1.5.0
                       Variant: ManualLayout
                       Properties:
-                        Fill: =RGBA(15, 84, 140, 1)
+                        Fill: =RGBA(14, 116, 144, 1)
                         Height: =31
                         Width: =315
                       Children:
@@ -587,6 +669,7 @@ Screens:
                       Variant: BrowseLayout_Vertical_TwoTextOneImageVariant_pcfCore
                       Properties:
                         BorderColor: =RGBA(243, 242, 241, 1)
+                        Fill: =RGBA(255, 255, 255, 1)
                         FocusedBorderColor: =RGBA(98, 100, 167, 1)
                         FocusedBorderThickness: =2
                         Items: |-
@@ -624,65 +707,139 @@ Screens:
                                   SortOrder.Descending
                               )
                           )
+                        TemplateSize: =86
                         Width: =315
                         Y: =40
                       Children:
-                        - Title1_1:
+                        - Rectangle1_2:
+                            Control: Rectangle@2.3.0
+                            Properties:
+                              BorderColor: =RGBA(226, 232, 240, 1)
+                              BorderThickness: =0.5
+                              DisabledFill: =RGBA(0,0,0,0)
+                              Fill: =RGBA(240, 249, 255, 0.3)
+                              FocusedBorderColor: =RGBA(98, 100, 167, 1)
+                              Height: =83
+                              HoverFill: =RGBA(0,0,0,0)
+                              OnSelect: =
+                              PressedFill: =RGBA(0,0,0,0)
+                              TabIndex: =0
+                              Width: =306
+                              X: =4
+                              Y: =2
+                        - Requester_1:
                             Control: FluentV8/Label@1.8.6
                             Properties:
-                              FontWeight: =FontWeight.Semibold
-                              Height: =24
+                              Color: =RGBA(71, 85, 105, 1)
+                              Font: =Font.Verdana
+                              FontSize: =8.5
+                              FontWeight: =FontWeight.Normal
+                              Height: =25
                               OnSelect: =Select(Parent)
                               TabIndex: =-1
                               Text: =ThisItem.RequesterName & " / " & ThisItem.RequesterTeamSnapshot
                               VerticalAlignment: =VerticalAlign.Top
-                              Width: =163
-                              X: =152
-                              Y: =((Parent.TemplateHeight - 36) / 2) - 4
-                        - Subtitle1_2:
+                              Width: =Parent.TemplateWidth - 24
+                              X: =16
+                              Y: =46
+                        - Title_1:
                             Control: FluentV8/Label@1.8.6
                             Properties:
-                              FontSize: =9
+                              Alignment: =Align.Left
+                              Color: =RGBA(17, 24, 39, 1)
+                              Font: =Font.Verdana
                               FontWeight: =FontWeight.Normal
-                              Height: =24
+                              Height: =22
                               OnSelect: =Select(Parent)
                               TabIndex: =-1
-                              Text: =Text(ThisItem.SubmittedAt, "yyyy.mm.dd")
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =Title1_1.Width
-                              X: =Title1_1.X
-                              Y: =Title1_1.Y + Title1_1.Height - 6
-                        - Subtitle1_3:
-                            Control: FluentV8/Label@1.8.6
+                              Text: =ThisItem.제목
+                              VerticalAlignment: =VerticalAlign.Middle
+                              Width: =Parent.TemplateWidth - 24
+                              X: =16
+                              Y: =23
+                        - Stage_1:
+                            Control: Badge@0.0.24
                             Properties:
-                              FontSize: =9
-                              FontWeight: =FontWeight.Normal
-                              Height: =24
-                              OnSelect: =Select(Parent)
-                              TabIndex: =-1
-                              Text: |-
+                              Appearance: ='BadgeCanvas.Appearance'.Outline
+                              BasePaletteColor: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", RGBA(254, 243, 199, 1),
+                                    "PendingWorker", RGBA(255, 237, 213, 1),
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", RGBA(220, 252, 231, 1), RGBA(224, 242, 254, 1)),
+                                    "RejectedByLeader", RGBA(254, 226, 226, 1),
+                                    "RejectedByWorker", RGBA(254, 226, 226, 1),
+                                    RGBA(241, 245, 249, 1)
+                                )
+                              Content: |-
                                 =Switch(
                                     ThisItem.ApprovalState,
                                     "PendingLeader", "팀장 승인대기",
                                     "PendingWorker", "작업자 수락대기",
-                                    "AcceptedByWorker", "작업중",
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", "작업완료", "작업중"),
                                     "RejectedByLeader", "팀장 반려",
                                     "RejectedByWorker", "작업자 반려",
                                     "-"
                                 )
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =Title1_1.Width
-                              X: =9
-                              Y: =2
-                        - Rectangle2:
+                              Font: =Font.Verdana
+                              FontColor: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", RGBA(180, 83, 9, 1),
+                                    "PendingWorker", RGBA(194, 65, 12, 1),
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", RGBA(21, 128, 61, 1), RGBA(3, 105, 161, 1)),
+                                    "RejectedByLeader", RGBA(185, 28, 28, 1),
+                                    "RejectedByWorker", RGBA(185, 28, 28, 1),
+                                    RGBA(71, 85, 105, 1)
+                                )
+                              FontSize: =9
+                              FontWeight: =FontWeight.Semibold
+                              Height: =18
+                              Shape: ='BadgeCanvas.Shape'.Circular
+                              Width: =75
+                              X: =12
+                              Y: =5
+                        - Text5_1:
+                            Control: ModernText@1.0.0
+                            Properties:
+                              Color: |-
+                                =If(
+                                    IsBlank(ThisItem.DesiredDueDate),
+                                    RGBA(100, 116, 139, 1),
+                                    If(
+                                        ThisItem.DesiredDueDate < Today(),
+                                        RGBA(220, 38, 38, 1),
+                                        If(
+                                            DateDiff(Today(), ThisItem.DesiredDueDate, TimeUnit.Days) <= 3,
+                                            RGBA(217, 119, 6, 1),
+                                            RGBA(100, 116, 139, 1)
+                                        )
+                                    )
+                                )
+                              Font: =Font.Verdana
+                              Height: =22
+                              OnSelect: =Select(Parent)
+                              Size: =8.5
+                              Text: |-
+                                ="요청 " & Text(ThisItem.SubmittedAt, "yyyy.mm.dd") &
+                                "  | 🔴 마감 " &
+                                If(
+                                    IsBlank(ThisItem.DesiredDueDate),
+                                    "-",
+                                    Text(ThisItem.DesiredDueDate, "yyyy.mm.dd")
+                                )
+                              Width: =Parent.TemplateWidth - 24
+                              X: =12
+                              Y: =64
+                        - Rectangle1_3:
                             Control: Rectangle@2.3.0
                             Properties:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DisabledFill: =RGBA(0,0,0,0)
-                              Fill: =RGBA(0,0,0,0)
+                              Fill: =RGBA(0, 0, 0, 0)
                               FocusedBorderColor: =RGBA(98, 100, 167, 1)
-                              Height: =Parent.TemplateHeight
-                              HoverFill: =RGBA(0,0,0,0)
+                              Height: =86
+                              HoverFill: =RGBA(248, 250, 252, 0.3)
                               OnSelect: |-
                                 =Set(varSelectedRequest, ThisItem);
                                 Set(varRequestMode, "View");
@@ -715,26 +872,15 @@ Screens:
                                     )
                                 );
                                 Set(varShowRequestPopup, true);
-                              PressedFill: =RGBA(0,0,0,0)
+                              PressedFill: =
                               TabIndex: =0
                               Width: =Parent.TemplateWidth
-                        - Subtitle1_8:
-                            Control: FluentV8/Label@1.8.6
-                            Properties:
-                              FontSize: =9
-                              FontWeight: =FontWeight.Normal
-                              Height: =24
-                              OnSelect: =Select(Parent)
-                              TabIndex: =-1
-                              Text: =ThisItem.제목
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =80
-                              X: =72
-                              Y: =2
       - Container7:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
+            BorderColor: =RGBA(223, 228, 234, 1)
+            BorderThickness: =1
             Fill: =RGBA(255, 255, 255, 1)
             Height: =637
             Width: =340
@@ -746,6 +892,7 @@ Screens:
                 Variant: ManualLayout
                 Properties:
                   BorderStyle: =BorderStyle.None
+                  Fill: =RGBA(255, 255, 255, 1)
                   Height: =615
                   PaddingBottom: |+
                     =10
@@ -757,7 +904,7 @@ Screens:
                       Control: GroupContainer@1.5.0
                       Variant: ManualLayout
                       Properties:
-                        Fill: =RGBA(153, 153, 153, 1)
+                        Fill: =RGBA(217, 119, 6, 1)
                         Height: =31
                         Width: =315
                       Children:
@@ -840,57 +987,141 @@ Screens:
                                   )
                               )
                           )
+                        TemplateSize: =89
                         Width: =315
                         Y: =40
                       Children:
-                        - Title1:
+                        - Rectangle1_1:
+                            Control: Rectangle@2.3.0
+                            Properties:
+                              BorderColor: =RGBA(226, 232, 240, 1)
+                              BorderThickness: =0.5
+                              DisabledFill: =RGBA(0,0,0,0)
+                              Fill: |-
+                                =RGBA(255, 248, 235, 0.3
+                                )
+                              FocusedBorderColor: =RGBA(98, 100, 167, 1)
+                              Height: =83
+                              HoverFill: =RGBA(0,0,0,0)
+                              OnSelect: =
+                              PressedFill: =RGBA(0,0,0,0)
+                              TabIndex: =0
+                              Width: =306
+                              X: =4
+                              Y: =2
+                        - Requester:
                             Control: FluentV8/Label@1.8.6
                             Properties:
+                              Color: =RGBA(71, 85, 105, 1)
                               Font: =Font.Verdana
-                              FontSize: =9
+                              FontSize: =8.5
                               FontWeight: =FontWeight.Normal
-                              Height: =24
+                              Height: =25
                               OnSelect: =Select(Parent)
                               TabIndex: =-1
                               Text: =ThisItem.RequesterName & " / " & ThisItem.RequesterTeamSnapshot
                               VerticalAlignment: =VerticalAlign.Top
-                              Width: =120
-                              X: =185
-                              Y: =((Parent.TemplateHeight - 36) / 2) - 4
-                        - Subtitle1:
+                              Width: =Parent.TemplateWidth - 24
+                              X: =16
+                              Y: =46
+                        - Title:
                             Control: FluentV8/Label@1.8.6
                             Properties:
-                              FontSize: =9
+                              Alignment: =Align.Left
+                              Color: =RGBA(17, 24, 39, 1)
+                              Font: =Font.Verdana
                               FontWeight: =FontWeight.Normal
-                              Height: =24
-                              OnSelect: =Select(Parent)
-                              TabIndex: =-1
-                              Text: =Text(ThisItem.SubmittedAt, "yyyy.mm.dd")
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =97
-                              X: =Title1.X
-                              Y: =Title1.Y + Title1.Height - 6
-                        - Subtitle1_6:
-                            Control: FluentV8/Label@1.8.6
-                            Properties:
-                              FontSize: =9
-                              FontWeight: =FontWeight.Normal
-                              Height: =24
+                              Height: =22
                               OnSelect: =Select(Parent)
                               TabIndex: =-1
                               Text: =ThisItem.제목
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =80
-                              X: =92
+                              VerticalAlignment: =VerticalAlign.Middle
+                              Width: =Parent.TemplateWidth - 24
+                              X: =16
+                              Y: =23
+                        - Text5:
+                            Control: ModernText@1.0.0
+                            Properties:
+                              Color: |-
+                                =If(
+                                    IsBlank(ThisItem.DesiredDueDate),
+                                    RGBA(100, 116, 139, 1),
+                                    If(
+                                        ThisItem.DesiredDueDate < Today(),
+                                        RGBA(220, 38, 38, 1),
+                                        If(
+                                            DateDiff(Today(), ThisItem.DesiredDueDate, TimeUnit.Days) <= 3,
+                                            RGBA(217, 119, 6, 1),
+                                            RGBA(100, 116, 139, 1)
+                                        )
+                                    )
+                                )
+                              Font: =Font.Verdana
+                              Height: =22
+                              OnSelect: =Select(Parent)
+                              Size: =8.5
+                              Text: |-
+                                ="요청 " & Text(ThisItem.SubmittedAt, "yyyy.mm.dd") &
+                                "  | 🔴 마감 " &
+                                If(
+                                    IsBlank(ThisItem.DesiredDueDate),
+                                    "-",
+                                    Text(ThisItem.DesiredDueDate, "yyyy.mm.dd")
+                                )
+                              Width: =Parent.TemplateWidth - 24
+                              X: =12
+                              Y: =66
+                        - Stage:
+                            Control: Badge@0.0.24
+                            Properties:
+                              Appearance: ='BadgeCanvas.Appearance'.Outline
+                              BasePaletteColor: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", RGBA(254, 243, 199, 1),
+                                    "PendingWorker", RGBA(255, 237, 213, 1),
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", RGBA(220, 252, 231, 1), RGBA(224, 242, 254, 1)),
+                                    "RejectedByLeader", RGBA(254, 226, 226, 1),
+                                    "RejectedByWorker", RGBA(254, 226, 226, 1),
+                                    RGBA(241, 245, 249, 1)
+                                )
+                              Content: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", "팀장 승인대기",
+                                    "PendingWorker", "작업자 수락대기",
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", "작업완료", "작업중"),
+                                    "RejectedByLeader", "팀장 반려",
+                                    "RejectedByWorker", "작업자 반려",
+                                    "-"
+                                )
+                              Font: =Font.Verdana
+                              FontColor: |-
+                                =Switch(
+                                    ThisItem.ApprovalState,
+                                    "PendingLeader", RGBA(180, 83, 9, 1),
+                                    "PendingWorker", RGBA(194, 65, 12, 1),
+                                    "AcceptedByWorker", If(ThisItem.Stage = "Completed", RGBA(21, 128, 61, 1), RGBA(3, 105, 161, 1)),
+                                    "RejectedByLeader", RGBA(185, 28, 28, 1),
+                                    "RejectedByWorker", RGBA(185, 28, 28, 1),
+                                    RGBA(71, 85, 105, 1)
+                                )
+                              FontSize: =9
+                              FontWeight: =FontWeight.Semibold
+                              Height: =18
+                              Shape: ='BadgeCanvas.Shape'.Circular
+                              Width: =75
+                              X: =12
+                              Y: =5
                         - Rectangle1:
                             Control: Rectangle@2.3.0
                             Properties:
                               BorderColor: =RGBA(243, 242, 241, 1)
                               DisabledFill: =RGBA(0,0,0,0)
-                              Fill: =RGBA(0,0,0,0)
+                              Fill: =RGBA(0, 0, 0, 0)
                               FocusedBorderColor: =RGBA(98, 100, 167, 1)
-                              Height: =Parent.TemplateHeight
-                              HoverFill: =RGBA(0,0,0,0)
+                              Height: =88
+                              HoverFill: =RGBA(248, 250, 252, 0.3)
                               OnSelect: |-
                                 =Set(varSelectedRequest, ThisItem);
                                 Set(varRequestMode, "View");
@@ -923,50 +1154,14 @@ Screens:
                                     )
                                 );
                                 Set(varShowRequestPopup, true);
-                              PressedFill: =RGBA(0,0,0,0)
+                              PressedFill: =
                               TabIndex: =0
                               Width: =Parent.TemplateWidth
-                        - status:
-                            Control: FluentV8/Label@1.8.6
-                            Properties:
-                              Color: |-
-                                =// 갤러리 TemplateFill 또는 특정 레이블의 Color 속성 예시
-                                If(
-                                    ThisItem.ApprovalState = "PendingLeader",
-                                    RGBA(205, 209, 106, 1),
-                                    If(
-                                        ThisItem.ApprovalState = "PendingWorker",
-                                        RGBA(255, 236, 179, 1),
-                                        If(
-                                            ThisItem.ApprovalState = "AcceptedByWorker",
-                                            RGBA(204, 229, 255, 1),
-                                            RGBA(255, 204, 204, 1)   // 반려일 때
-                                        )
-                                    )
-                                )
-                              FontSize: =9
-                              FontWeight: =FontWeight.Normal
-                              Height: =24
-                              OnSelect: =Select(Parent)
-                              TabIndex: =-1
-                              Text: |-
-                                =Switch(
-                                    ThisItem.ApprovalState,
-                                    "PendingLeader", "팀장 승인대기",
-                                    "PendingWorker", "작업자 수락대기",
-                                    "AcceptedByWorker", "작업중",
-                                    "RejectedByLeader", "팀장 반려",
-                                    "RejectedByWorker", "작업자 반려",
-                                    "-"
-                                )
-                              VerticalAlignment: =VerticalAlign.Top
-                              Width: =80
-                              Y: =2
       - Icon3:
           Control: Classic/Icon@2.5.0
           Properties:
             BorderColor: =RGBA(0, 0, 0, 0)
-            Color: =RGBA(13, 50, 61, 1)
+            Color: =RGBA(53, 61, 63, 1)
             DisabledBorderColor: =RGBA(243, 242, 241, 1)
             DisabledColor: =RGBA(220, 220, 220, 1)
             DisabledFill: =RGBA(0, 0, 0, 0)
@@ -984,19 +1179,19 @@ Screens:
             PressedFill: =RGBA(0, 0, 0, 0)
             Width: =24
             X: =16
-            Y: =69
+            Y: =66
       - Header_con_5:
           Control: GroupContainer@1.5.0
           Variant: ManualLayout
           Properties:
-            Fill: =RGBA(34, 35, 58, 1)
+            Fill: =RGBA(27, 38, 59, 1)
             Height: =35
             Width: =1366
           Children:
             - name_label:
                 Control: FluentV8/Label@1.8.6
                 Properties:
-                  Color: =RGBA(255, 255, 255, 1)
+                  Color: =RGBA(230, 235, 242, 1)
                   Font: =Font.Verdana
                   FontSize: =8
                   Height: =20
@@ -1016,14 +1211,14 @@ Screens:
                 Control: FluentV8/Label@1.8.6
                 Properties:
                   Alignment: =Align.Center
-                  Color: =RGBA(244, 244, 243, 1)
+                  Color: =RGBA(255, 255, 255, 1)
                   Font: =Font.Verdana
                   FontSize: =14
                   FontWeight: =FontWeight.Semibold
-                  Text: ="연구소 시작실 작업 의뢰서"
-                  Width: =228
-                  X: =3
-                  Y: =1
+                  Height: =35
+                  Text: ="연구소 시작실 작업의뢰"
+                  TextRole: ='Label.TextRole'.Heading1
+                  Width: =205
             - name_label_6:
                 Control: FluentV8/Label@1.8.6
                 Properties:
@@ -1850,6 +2045,26 @@ Screens:
                               }
                           );
 
+                          // ➕ 추가: 의뢰자 메일 발송
+                          If(
+                              !IsBlank(varSelectedRequest.RequesterEmail),
+                              Office365Outlook.SendEmailV2(
+                                  varSelectedRequest.RequesterEmail,
+                                  "[작업의뢰] 작업 완료 - " & varSelectedRequest.RequestNo,
+                                  Concatenate(
+                                      "<div style='font-family:Segoe UI;'>",
+                                      "<h3>작업 완료</h3>",
+                                      "<p>의뢰하신 작업이 작업자에 의해 완료되었습니다.</p>",
+                                      "<p><b>요청번호:</b> ", varSelectedRequest.RequestNo, "</p>",
+                                      "<p><b>제목:</b> ", varSelectedRequest.Title, "</p>",
+                                      "<p><b>작업자:</b> ", varMyName, "</p>",
+                                      "<p><a href='", varAppUrl, "'>앱 바로가기</a></p>",
+                                      "</div>"
+                                  ),
+                                  { IsHtml: true, Importance: "Normal" }
+                              )
+                          );
+
                           // 작업자 메일
                           If(
                               !IsBlank(varMyEmail),
@@ -1888,6 +2103,7 @@ Screens:
                                   { IsHtml: true, Importance: "Normal" }
                               )
                           );
+
 
                           Refresh(das);
                           Refresh(WorkRequestComments_DB);
