@@ -4,23 +4,37 @@
 
 ## 주요 기능
 
-- 작업 의뢰 등록: 사용자는 제목·프로젝트·관련 기종·수량·희망 완료일·세부 내용을 입력하여 새로운 작업 의뢰를 제출할 수 있습니다. 필수 항목이 입력되지 않으면 저장되지 않으며, 등록 시 자동으로 RequestNo(WR-연도-4자리)가 생성됩니다.
-- 승인 및 반려 흐름: 의뢰 등록 후 Stage="Start" 와 ApprovalState="PendingLeader" 로 설정되어 팀장 승인을 기다립니다. 팀장은 승인 또는 반려를 선택할 수 있으며, 승인 시 PendingWorker 상태로 넘어가 작업자에게 알림이 전송됩니다. 반려 시 CloseResult="Cancelled" 로 기록되고 의뢰자에게 알림됩니다. 팀장 부재 시 의뢰자가 대리 승인(팝업 확인) 할 수 있습니다.
-- 작업자 처리: 작업자는 PendingWorker 상태에서 작업 수락 또는 반려를 선택합니다. 수락 시 Stage="InProgress", ApprovalState="AcceptedByWorker" 로 변경되어 작업을 시작할 수 있으며, 반려 시 CloseResult="Cancelled" 로 저장됩니다. 작업 진행 후 btnStartWork/btnCompleteWork 버튼을 통해 시작 시각(StartedAt), 완료 시각(CompletedAt) 및 결과(CloseResult="WorkDone")를 기록합니다.
-- 메인 현황판: 시작전/진행중/완료 세 컬럼으로 구성된 카드형 대시보드를 제공하며, 기간·검색·토글(완료/반려 포함) 필터를 통해 원하는 조건의 작업을 조회할 수 있습니다. 카드에는 상태 배지, 제목, 담당자, 요청일/마감일이 표시되고, 기한 임박 시 색상으로 강조됩니다.
-- 역할별 화면: 의뢰자·팀장·작업자 각 역할에 따라 상세화면 하단의 처리 버튼이 달라집니다. 의뢰자는 삭제/대리승인, 팀장은 승인/반려, 작업자는 수락/반려/완료 버튼만 볼 수 있습니다.
-- 알림 시스템: Office 365 Outlook 커넥터를 이용해 각 단계 전환 시 관련자에게 메일 알림을 전송합니다. 작업 진행 중에는 작업자, 승인/반려 시에는 팀장·의뢰자 등 역할별로 적절한 안내 메일이 발송됩니다.
-- 관리자 전용 조회: 특정 사용자는 진행중·완료 컬럼 전체를 조회할 수 있도록 특별 권한(varIsViewer)을 부여했습니다. 시작전 컬럼은 본인 요청만 볼 수 있으며 결재 권한은 기존과 동일하게 유지됩니다.
-  
+- **작업 의뢰 등록**: 사용자는 제목·프로젝트·관련 기종·수량·희망 완료일·세부 내용을 입력하여 새로운 작업 의뢰를 제출할 수 있습니다. 필수 항목이 입력되지 않으면 저장되지 않으며, 등록 시 자동으로 RequestNo(WR-연도-4자리)가 생성됩니다.
+- **승인 및 반려 흐름**: 의뢰 등록 후 Stage="Start" 와 ApprovalState="PendingLeader" 로 설정되어 팀장 승인을 기다립니다. 팀장은 승인 또는 반려를 선택할 수 있으며, 승인 시 PendingWorker 상태로 넘어가 작업자에게 알림이 전송됩니다. 반려 시 CloseResult="Cancelled" 로 기록되고 의뢰자에게 알림됩니다. 팀장 부재 시 의뢰자가 대리 승인(팝업 확인) 할 수 있습니다.
+- **작업자 처리**: 작업자는 PendingWorker 상태에서 작업 수락 또는 반려를 선택합니다. 수락 시 Stage="InProgress", ApprovalState="AcceptedByWorker" 로 변경되어 작업을 시작할 수 있으며, 반려 시 CloseResult="Cancelled" 로 저장됩니다. 작업 진행 후 완료 버튼을 통해 완료 시각(CompletedAt) 및 결과(CloseResult="WorkDone")를 기록합니다.
+- **메인 현황판**: 시작전/진행중/완료 세 컬럼으로 구성된 카드형 대시보드를 제공하며, 기간·검색·토글(완료/반려 포함) 필터를 통해 원하는 조건의 작업을 조회할 수 있습니다. 카드에는 상태 배지, 제목, 담당자, 요청일/마감일이 표시되고, 기한 임박 시 색상으로 강조됩니다.
+- **역할별 화면**: 의뢰자·팀장·작업자 각 역할에 따라 상세화면 하단의 처리 버튼이 달라집니다. 의뢰자는 삭제/대리승인, 팀장은 승인/반려, 작업자는 수락/반려/완료 버튼만 볼 수 있습니다.
+- **알림 시스템**: Office 365 Outlook 커넥터를 이용해 각 단계 전환 시 관련자에게 메일 알림을 전송합니다. 작업 진행 중에는 작업자, 승인/반려 시에는 팀장·의뢰자 등 역할별로 적절한 안내 메일이 발송됩니다.
+- **컬럼별 조회 범위**: 시작전은 역할별 필터 적용(본인 건 또는 팀장은 팀원 승인대기 건 포함), 진행중은 모든 사용자에게 전체 공개(시작실 업무 과부하 현황 파악 목적), 완료는 작업자 전체 / 팀장 자기 팀 건 / 일반 사용자 본인 건으로 구분됩니다.
+- **전체 조회 권한(varIsViewer)**: 특정 사용자(관리자·개발자)는 시작전·진행중·완료 전 컬럼의 전체 데이터를 조회할 수 있습니다. 이메일 하드코딩 방식으로 관리합니다.
+
+## 역할 정의
+
+| 역할 | 판단 기준 | 시작전 | 진행중 | 완료 |
+|------|----------|--------|--------|------|
+| 작업자 (varIsWorker) | varWorkerEmail 일치 | 수락대기 건 전체 | 전체 | 전체 |
+| 팀장 (varIsTeamLeader) | 직급2 = "팀장" | 본인 건 + 팀원 승인대기 건 | 전체 | 자기 팀 건 |
+| 전체조회자 (varIsViewer) | 이메일 하드코딩 | 전체 | 전체 | 전체 |
+| 일반 사용자 | 위 해당 없음 | 본인 건 | 전체 | 본인 건 |
+
 ## 설치 및 배포
 
-1. SharePoint 리스트 준비: WorkRequests_DB와 WorkRequestComments_DB 리스트를 생성하고 sharepoint_schema.md에 정의된 컬럼을 동일하게 구성합니다. 앱에서 데이터 소스 이름은 각각 das와 WorkRequestComments_DB로 지정되어 있습니다.
-2. Power Apps 임포트: 이 저장소의 powerapps/WorkRequest_Screen_fullcode.yaml 파일을 Power Apps 스튜디오에서 가져와 새 캔버스 앱을 생성합니다. OnStart 이벤트 실행 후 데이터 연결을 설정하면 앱이 초기화됩니다.
-3. 환경 변수 설정: 앱 실행 시 varAppUrl(앱 링크), varWorkerEmail(작업자 이메일), varMyEmail/varMyName 등의 사용자 정보를 초기화합니다. App.OnStart에 맞게 환경에 따라 값을 수정하세요.
-5. Teams 탭 추가(선택): 앱을 Microsoft Teams의 탭으로 추가하여 조직원들이 쉽게 접근하도록 할 수 있습니다.
-   
+1. **SharePoint 리스트 준비**: WorkRequests_DB와 WorkRequestComments_DB 리스트를 생성하고 `sharepoint/sharepoint_schema.md`에 정의된 컬럼을 동일하게 구성합니다. 앱에서 데이터 소스 이름은 각각 `das`와 `WorkRequestComments_DB`로 지정되어 있습니다.
+2. **Power Apps 임포트**: 이 저장소의 `powerapps/WorkRequest_Screen_fullcode.yaml` 파일을 Power Apps 스튜디오에서 가져와 새 캔버스 앱을 생성합니다.
+3. **환경 변수 설정**: `WorkRequest_Screen.OnVisible`에서 아래 항목을 환경에 맞게 수정합니다.
+   - `varAppUrl`: 배포된 앱의 링크
+   - `varWorkerEmail`: 작업자 이메일 (1인 고정)
+   - `varIsViewer`: 전체 조회 권한 부여할 이메일 목록 (OR 조건으로 추가)
+4. **Teams 탭 추가(선택)**: 앱을 Microsoft Teams의 탭으로 추가하여 조직원들이 쉽게 접근하도록 할 수 있습니다.
+
 ## 파일 구조
 
+```
 ├─ powerapps
 │   └─ WorkRequest_Screen_fullcode.yaml    # 전체 Power Apps 화면 정의
 ├─ sharepoint
@@ -31,9 +45,11 @@
 │   └─ images
 │       └─ workflow.png                    # 작업 흐름도 등 매뉴얼 이미지
 ├─ README.md                               # 프로젝트 개요 및 사용법
+├─ CLAUDE.md                               # Claude 세션용 컨텍스트 문서
 ├─ development_log.md                      # 버전별 변경 내역
-└─ ... 기타 소스 및 자산
+└─ sharepoint/sharepoint_schema.md         # SharePoint 리스트 스키마
+```
 
 ## 개발 노트
 
-자세한 변경 사항과 향후 개선 계획은 development_log.md에 기록되어 있습니다.
+자세한 변경 사항과 향후 개선 계획은 `development_log.md`에 기록되어 있습니다. Claude 세션 재개 시에는 `CLAUDE.md`를 먼저 첨부하세요.
